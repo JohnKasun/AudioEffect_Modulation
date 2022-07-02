@@ -11,6 +11,7 @@ public:
 	enum Param_t {
 		amplitude,
 		freqInHz,
+		phaseInRadians,
 
 		numParams
 	};

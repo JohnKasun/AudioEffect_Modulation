@@ -14,6 +14,9 @@ Lfo::Lfo(float sampleRate){
 }
 
 void Lfo::setParam(Param_t param, float value){
+	if (param == Param_t::phaseInRadians) {
+		mBuffer.setReadIdx(CUtil::float2int<int>(value / (2.0f * M_PI) * mBuffer.getLength()));
+	}
 	mParamValues[param] = value;
 }
 
