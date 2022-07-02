@@ -15,31 +15,34 @@ public:
 		Triangle
 	};
 
-	enum class Parameter {
-		Depth,
-		Speed,
-		Shape
-	};
-
 	Chorus();
 	~Chorus();
 
 	Error_t init(float sampleRate);
 	Error_t reset();
 
-	Error_t setParameter(Chorus::Parameter param, auto value);
-	auto getParameter(Chorus::Parameter param) const;
+	Error_t setDepth(float newDepth);
+	Error_t setSpeed(float newSpeed);
+	Error_t setShape(Chorus::Shape newShape);
+
+	float getDepth() const;
+	float getSpeed() const;
+	Chorus::Shape getShape() const;
 
 	Error_t process(const float const* inputBuffer, float const* outputBuffer, const int numSamples);
 private:
 	
-	const float mMaxDelayInSec = 0.6;
-	const int mNumVoices = 3;
+	enum class RangedParameter {
+		Depth,
+		Speed,
+
+		NumRangedParameters
+	};
 
 	float mSampleRate = 1.0f;
 	bool mIsInitialized = false;
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
 	std::vector<Lfo> mLfos;
 
-	bool isParamInRange(Chorus::Parameter param, auto value) const;
+	bool isParamInRange(Chorus::RangedParameter param, auto value) const;
 };

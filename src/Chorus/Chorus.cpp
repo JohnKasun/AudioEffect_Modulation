@@ -30,27 +30,6 @@ Error_t Chorus::reset()
 	}
 }
 
-Error_t Chorus::setParameter(Chorus::Parameter param, auto value)
-{
-	switch (param) {
-		using Chorus::Parameter;
-	case Depth:
-
-		break;
-	case Speed:
-		break;
-	case Shape:
-		break;
-	default:
-		;
-	}
-}
-
-auto Chorus::getParameter(Chorus::Parameter param) const
-{
-
-}
-
 
 Error_t Chorus::process(const float const* inputBuffer, float const* outputBuffer, const int numSamples)
 {
