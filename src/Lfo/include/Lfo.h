@@ -12,6 +12,7 @@ public:
 		amplitude,
 		freqInHz,
 		phaseInRadians,
+		dc,
 
 		numParams
 	};

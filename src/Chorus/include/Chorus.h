@@ -29,7 +29,7 @@ public:
 	float getSpeed() const;
 	Chorus::Shape getShape() const;
 
-	Error_t process(const float const* inputBuffer, float const* outputBuffer, const int numSamples);
+	Error_t process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 private:
 	
 	enum class RangedParameter {
@@ -39,10 +39,12 @@ private:
 		NumRangedParameters
 	};
 
+	const int mNumVoices = 3;
 	float mSampleRate = 1.0f;
 	bool mIsInitialized = false;
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
-	std::vector<Lfo> mLfos;
+	std::vector<std::unique_ptr<Lfo>> mLfos;
 
-	bool isParamInRange(Chorus::RangedParameter param, auto value) const;
+	float mParamRanges[static_cast<int>(RangedParameter::NumRangedParameters)][2]{};
+	bool isParamInRange(Chorus::RangedParameter param, float value) const;
 };

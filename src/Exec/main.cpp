@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
 	float** inputAudioData = nullptr;
 	float** outputAudioData = nullptr;
-	std::vector<unique_ptr<Chorus>> Chorus;
+	std::vector<unique_ptr<Chorus>> chorus;
 
 	string inputFilePath{};
 	string outputFilePath{};
@@ -47,11 +47,27 @@ int main(int argc, char* argv[])
 		audioFileIn->getFileSpec(fileSpec);
 
 		// Open Output File
+		outputFilePath = inputFilePath;
+		for (int i = 0; i < 4; i++) {
+			outputFilePath.pop_back();
+		}
+		outputFilePath.append("Out.wav");
+		CAudioFileIf::create(audioFileOut);
+		audioFileOut->openFile(outputFilePath, CAudioFileIf::FileIoType_t::kFileWrite, &fileSpec);
+		if (!audioFileOut->isOpen()) {
+			throw Exception("Couldn't open output file...");
+		}
 
 		// Create and initialize instance
+		for (int c = 0; c < fileSpec.iNumChannels; c++) {
+			chorus.emplace_back(new Chorus());
+			chorus[c]->init(fileSpec.fSampleRateInHz);
+			chorus[c]->setDepth(0.1);
+			chorus[c]->setSpeed(1);
+		}
 
 		// Set parameters
-
+		// 
 		// Allocate memory
 		inputAudioData = new float* [fileSpec.iNumChannels]{};
 		outputAudioData = new float* [fileSpec.iNumChannels]{};
@@ -65,7 +81,9 @@ int main(int argc, char* argv[])
 		while (!audioFileIn->isEof()) {
 			if (audioFileIn->readData(inputAudioData, iNumFrames) != Error_t::kNoError)
 				throw Exception("Data reading error...");
-			// Process function
+			for (int c = 0; c < fileSpec.iNumChannels; c++) {
+				chorus[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames);
+			}
 			if (audioFileOut->writeData(outputAudioData, iNumFrames) != Error_t::kNoError)
 				throw Exception("Data writing error...");
 		}
@@ -80,7 +98,7 @@ int main(int argc, char* argv[])
 
 		CAudioFileIf::destroy(audioFileIn);
 		CAudioFileIf::destroy(audioFileOut);
-		Chorus.clear();
+		chorus.clear();
 
 		cout << endl;
 		cout << std::setw(entryLabelWidth) << "Done processing..." << endl;
