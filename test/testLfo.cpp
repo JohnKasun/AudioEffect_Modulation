@@ -3,31 +3,48 @@
 #include "catch.hpp"
 #include "Lfo.h"
 #include "CatchUtil.h"
+#include "Synthesis.h"
+#include "Vector.h"
 
-TEST_CASE("[Lfo] Correct Output") {
-	std::unique_ptr<float> outBuffTest = nullptr;
-	std::unique_ptr<float> outBuffGrd = nullptr;
-	std::unique_ptr<Lfo> lfo = nullptr;
-
-	int numSamples = 100;
-	float sampleRate = 44100.0f;
-	float freqInHz = 1.0f;
-	float amplitude = 1.0f;
-
-	outBuffTest.reset(new float[numSamples] {});
-	outBuffGrd.reset(new float[numSamples] {});
-	lfo.reset(new Lfo(sampleRate));
-
-	CSynthesis::generateSine(outBuffGrd.get(), freqInHz, sampleRate, numSamples, amplitude);
-	lfo->setParam(Lfo::Param_t::freqInHz, freqInHz);
-	lfo->setParam(Lfo::Param_t::amplitude, amplitude);
-	for (int i = 0; i < numSamples; i++) {
-		outBuffTest.get()[i] = lfo->process();
+TEST_CASE("Lfo") {
+	auto sampleRate = float{ 48000 };
+	auto numSamples = int{ 1000 };
+	auto lfo = std::make_unique<Lfo>(sampleRate);
+	auto outputBuffer = std::make_unique<float[]>(numSamples);
+	auto groundBuffer = std::make_unique<float[]>(numSamples);
+	auto freq = float{ 1.0f };
+	auto amp = float{ 1 };
+	lfo->setParam(Lfo::freqInHz, freq);
+	lfo->setParam(Lfo::amplitude, amp);
+	SECTION("Freq - Amp") {
+		CSynthesis::generateSine(groundBuffer.get(), freq, sampleRate, numSamples, amp);
+		for (int i = 0; i < numSamples; i++) {
+			outputBuffer.get()[i] = lfo->process();
+		}
+		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
-
-	CatchUtil::compare(outBuffTest.get(), outBuffGrd.get(), numSamples, 1E-4);
-
+	SECTION("Freq - Amp - Phase") {
+		auto phase = float{ static_cast<float>(M_PI) };
+		lfo->setParam(Lfo::phaseInRadians, phase);
+		CSynthesis::generateSine(groundBuffer.get(), freq, sampleRate, numSamples, amp, phase);
+		for (int i = 0; i < numSamples; i++) {
+			outputBuffer.get()[i] = lfo->process();
+		}
+		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
+	}
+	SECTION("Freq - Amp - Phase - DC") {
+		auto phase = float{ static_cast<float>(M_PI) };
+		auto dc = float{ 3 };
+		lfo->setParam(Lfo::phaseInRadians, phase);
+		lfo->setParam(Lfo::dc, dc);
+		CSynthesis::generateSine(groundBuffer.get(), freq, sampleRate, numSamples, amp, phase);
+		CVectorFloat::addC_I(groundBuffer.get(), dc, numSamples);
+		for (int i = 0; i < numSamples; i++) {
+			outputBuffer.get()[i] = lfo->process();
+		}
+		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
+	}
 	lfo.reset();
-	outBuffGrd.reset();
-	outBuffTest.reset();
+	outputBuffer.reset();
+	groundBuffer.reset();
 }
