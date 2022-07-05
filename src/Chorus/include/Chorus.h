@@ -22,10 +22,12 @@ public:
 	Error_t init(float sampleRate);
 	Error_t reset();
 
+	Error_t setDelay(float newDelay);
 	Error_t setDepth(float newDepth);
 	Error_t setSpeed(float newSpeed);
 	Error_t setShape(Chorus::Shape newShape);
 
+	float getDelay() const;
 	float getDepth() const;
 	float getSpeed() const;
 	Chorus::Shape getShape() const;
@@ -34,6 +36,7 @@ public:
 private:
 	
 	enum class RangedParameter {
+		Delay,
 		Depth,
 		Speed,
 
@@ -47,4 +50,5 @@ private:
 
 	float mParamRanges[static_cast<int>(RangedParameter::NumRangedParameters)][2]{};
 	bool isParamInRange(Chorus::RangedParameter param, float value) const;
+	void updateLfoDc(float dAmp);
 };
