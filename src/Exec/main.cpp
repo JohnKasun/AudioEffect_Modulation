@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
 		for (int c = 0; c < fileSpec.iNumChannels; c++) {
 			chorus.emplace_back(new Chorus());
 			chorus[c]->init(fileSpec.fSampleRateInHz);
-			chorus[c]->setDepth(0.1);
-			chorus[c]->setSpeed(1);
+			chorus[c]->setDepth(0.02);
+			chorus[c]->setSpeed(0.25);
 		}
 
 		// Set parameters

@@ -8,6 +8,7 @@ file(GLOB ${CurrLib}_UTILITY ${CMAKE_SOURCE_DIR}/extern/Utility/include/*.h)
 set(${CurrLib}_DEPEND)
 list(APPEND ${CurrLib}_DEPEND ${${CurrLib}_UTILITY})
 list(APPEND ${CurrLib}_DEPEND ${CMAKE_SOURCE_DIR}/src/Lfo/include/Lfo.h)
+list(APPEND ${CurrLib}_DEPEND ${CMAKE_SOURCE_DIR}/src/CombFilter/include/CombFilter.h)
 
 add_library(${CurrLib}
         STATIC 
@@ -26,4 +27,5 @@ target_link_libraries(${CurrLib}
                 Utility
                 Lfo
                 RingBuffer
+                CombFilter
 )

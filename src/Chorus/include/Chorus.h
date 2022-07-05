@@ -6,6 +6,7 @@
 #include "ErrorDef.h"
 #include "RingBuffer.h"
 #include "Lfo.h"
+#include "CombFilter.h"
 
 class Chorus {
 public:
@@ -39,11 +40,10 @@ private:
 		NumRangedParameters
 	};
 
-	const int mNumVoices = 3;
 	float mSampleRate = 1.0f;
 	bool mIsInitialized = false;
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
-	std::vector<std::unique_ptr<Lfo>> mLfos;
+	std::unique_ptr<Lfo> mLfo;
 
 	float mParamRanges[static_cast<int>(RangedParameter::NumRangedParameters)][2]{};
 	bool isParamInRange(Chorus::RangedParameter param, float value) const;

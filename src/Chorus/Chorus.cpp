@@ -21,13 +21,8 @@ Error_t Chorus::init(float sampleRate)
 	reset();
 
 	mSampleRate = sampleRate;
-	mDelayLine.reset(new CRingBuffer<float>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1] * 2));
-	mDelayLine->setWriteIdx(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1]);
-	for (int i = 0; i < mNumVoices; i++) {
-		auto radianOffset = double{ 2.0f * M_PI / mNumVoices * i };
-		mLfos.emplace_back(new Lfo(mSampleRate));
-		mLfos.back()->setParam(Lfo::Param_t::phaseInRadians, static_cast<float>(radianOffset));
-	}
+	mDelayLine.reset(new CRingBuffer<float>(1 + CUtil::float2int<int>(2.0f * mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1])));
+	mLfo.reset(new Lfo(mSampleRate));
 	mIsInitialized = true;
 	return Error_t::kNoError;
 }
@@ -36,7 +31,7 @@ Error_t Chorus::reset()
 {
 	if (mIsInitialized) {
 		mDelayLine.reset();
-		mLfos.clear();
+		mLfo.reset();
 		mSampleRate = 1.0f;
 		mIsInitialized = false;
 	}
@@ -48,9 +43,8 @@ Error_t Chorus::setDepth(float newDepth)
 	if (!isParamInRange(RangedParameter::Depth, newDepth))
 		return Error_t::kFunctionInvalidArgsError;
 
-	for (auto& lfo : mLfos) {
-		lfo->setParam(Lfo::Param_t::amplitude, newDepth * mSampleRate);
-	}
+	mLfo->setParam(Lfo::Param_t::amplitude, -1.0f * newDepth * mSampleRate);
+	mLfo->setParam(Lfo::Param_t::dc, -1.0f * newDepth * mSampleRate);
 	return Error_t::kNoError;
 }
 
@@ -59,9 +53,7 @@ Error_t Chorus::setSpeed(float newSpeed)
 	if (!isParamInRange(RangedParameter::Speed, newSpeed))
 		return Error_t::kFunctionInvalidArgsError;
 
-	for (auto& lfo : mLfos) {
-		lfo->setParam(Lfo::Param_t::freqInHz, newSpeed);
-	}
+	mLfo->setParam(Lfo::Param_t::freqInHz, newSpeed);
 	return Error_t::kNoError;
 }
 
@@ -72,12 +64,12 @@ Error_t Chorus::setShape(Chorus::Shape newShape)
 
 float Chorus::getDepth() const
 {
-	return mLfos[0]->getParam(Lfo::Param_t::amplitude);
+	return mLfo->getParam(Lfo::Param_t::amplitude);
 }
 
 float Chorus::getSpeed() const
 {
-	return mLfos[0]->getParam(Lfo::Param_t::freqInHz);
+	return mLfo->getParam(Lfo::Param_t::freqInHz);
 }
 
 Chorus::Shape Chorus::getShape() const
@@ -90,11 +82,8 @@ Error_t Chorus::process(const float const* inputBuffer, float* outputBuffer, con
 {
 	for (int i = 0; i < numSamples; i++) {
 		mDelayLine->putPostInc(inputBuffer[i]);
-		auto sum = float{ 0 };
-		for (auto& lfo : mLfos) {
-			sum += mDelayLine->get(lfo->process());
-		}
-		outputBuffer[i] = sum;
+		auto offset = float{ mLfo->process() };
+		outputBuffer[i] = mDelayLine->get() + mDelayLine->get(offset);
 		mDelayLine->getPostInc();
 	}
 	return Error_t::kNoError;
