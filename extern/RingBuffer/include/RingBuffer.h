@@ -77,14 +77,6 @@ public:
             std::memcpy (m_ptBuff, &ptNewBuff[iNumValues2End], sizeof(T)*(iLength - iNumValues2End));
     }
 
-    void add(T tNewValue, int iOffset = 0)
-    {
-        int iOldWriteIdx = m_iWriteIdx;
-        incIdx(m_iWriteIdx, iOffset);
-        put(tNewValue + m_ptBuff[m_iWriteIdx]);
-        m_iWriteIdx = iOldWriteIdx;
-    }
-
     void add(const T* ptNewBuff, int iLength)
     {
         int iWriteIdx = m_iWriteIdx;

@@ -22,9 +22,9 @@ public:
 	Error_t init(float sampleRate);
 	Error_t reset();
 
-	Error_t setDelay(float newDelay);
-	Error_t setDepth(float newDepth);
-	Error_t setSpeed(float newSpeed);
+	Error_t setDelay(float newDelayInMs);
+	Error_t setDepth(float newDepthInMs);
+	Error_t setSpeed(float newSpeedInHz);
 	Error_t setShape(Chorus::Shape newShape);
 
 	float getDelay() const;

@@ -3,9 +3,9 @@
 Chorus::Chorus()
 {
 	mParamRanges[static_cast<int>(RangedParameter::Delay)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Delay)][1] = 0.2;
+	mParamRanges[static_cast<int>(RangedParameter::Delay)][1] = 20;
 	mParamRanges[static_cast<int>(RangedParameter::Depth)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 0.02;
+	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 50;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][0] = 0;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][1] = 1;
 }
@@ -23,8 +23,8 @@ Error_t Chorus::init(float sampleRate)
 	reset();
 
 	mSampleRate = sampleRate;
-	auto maxDelay = int{ CUtil::float2int<int>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Delay)][1]) };
-	auto maxDepth = int{ CUtil::float2int<int>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1]) };
+	auto maxDelay = int{ CUtil::float2int<int>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Delay)][1] / 1000.0f) };
+	auto maxDepth = int{ CUtil::float2int<int>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1] / 1000.0f) };
 	mDelayLine.reset(new CRingBuffer<float>(1 + maxDelay + maxDepth));
 	mLfo.reset(new Lfo(mSampleRate));
 	mIsInitialized = true;
@@ -42,34 +42,34 @@ Error_t Chorus::reset()
 	return Error_t::kNoError;
 }
 
-Error_t Chorus::setDelay(float newDelay)
+Error_t Chorus::setDelay(float newDelayInMs)
 {
-	if (!isParamInRange(RangedParameter::Delay, newDelay))
+	if (!isParamInRange(RangedParameter::Delay, newDelayInMs))
 		return Error_t::kFunctionInvalidArgsError;
 
-	auto newDelayInSamp = float{ newDelay * mSampleRate };
+	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f};
 	auto newDc = float{ newDelayInSamp + mLfo->getParam(Lfo::Param_t::amplitude) };
 	mLfo->setParam(Lfo::Param_t::dc, -1.0f * newDc);
 }
 
-Error_t Chorus::setDepth(float newDepth)
+Error_t Chorus::setDepth(float newDepthInMs)
 {
-	if (!isParamInRange(RangedParameter::Depth, newDepth))
+	if (!isParamInRange(RangedParameter::Depth, newDepthInMs))
 		return Error_t::kFunctionInvalidArgsError;
 
-	auto newDepthInSamp = float{ newDepth * mSampleRate };
+	auto newDepthInSamp = float{ newDepthInMs * mSampleRate / 1000.0f };
 	auto newAmplitude = float{ newDepthInSamp / 2.0f };
 	updateLfoDc(newAmplitude - mLfo->getParam(Lfo::amplitude));
 	mLfo->setParam(Lfo::Param_t::amplitude, newAmplitude);
 	return Error_t::kNoError;
 }
 
-Error_t Chorus::setSpeed(float newSpeed)
+Error_t Chorus::setSpeed(float newSpeedInHz)
 {
-	if (!isParamInRange(RangedParameter::Speed, newSpeed))
+	if (!isParamInRange(RangedParameter::Speed, newSpeedInHz))
 		return Error_t::kFunctionInvalidArgsError;
 
-	mLfo->setParam(Lfo::Param_t::freqInHz, newSpeed);
+	mLfo->setParam(Lfo::Param_t::freqInHz, newSpeedInHz);
 	return Error_t::kNoError;
 }
 
@@ -80,12 +80,12 @@ Error_t Chorus::setShape(Chorus::Shape newShape)
 
 float Chorus::getDelay() const
 {
-	return (-1.0f * mLfo->getParam(Lfo::Param_t::dc)) - mLfo->getParam(Lfo::Param_t::amplitude) / mSampleRate;
+	return (-1.0f * mLfo->getParam(Lfo::Param_t::dc)) - mLfo->getParam(Lfo::Param_t::amplitude) / mSampleRate * 1000.0f;
 }
 
 float Chorus::getDepth() const
 {
-	return mLfo->getParam(Lfo::Param_t::amplitude) * 2.0f / mSampleRate;
+	return mLfo->getParam(Lfo::Param_t::amplitude) * 2.0f / mSampleRate * 1000.0f;
 }
 
 float Chorus::getSpeed() const
