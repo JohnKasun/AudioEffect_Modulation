@@ -6,11 +6,9 @@
 #include "ErrorDef.h"
 #include "RingBuffer.h"
 #include "Lfo.h"
-#include "CombFilter.h"
 
 class Chorus {
 public:
-
 	enum class Shape {
 		Sine,
 		Triangle
@@ -34,7 +32,6 @@ public:
 
 	Error_t process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 private:
-	
 	enum class RangedParameter {
 		Delay,
 		Depth,
@@ -50,5 +47,6 @@ private:
 
 	float mParamRanges[static_cast<int>(RangedParameter::NumRangedParameters)][2]{};
 	bool isParamInRange(Chorus::RangedParameter param, float value) const;
+
 	void updateLfoDc(float dAmp);
 };

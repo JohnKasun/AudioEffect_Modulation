@@ -21,5 +21,4 @@ target_link_libraries(${APP}
         Lfo
         Chorus
         Utility
-        CombFilter
 )

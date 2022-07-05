@@ -22,5 +22,4 @@ target_link_libraries(${APP}
                 AudioFileIO
                 Lfo
                 RingBuffer
-                CombFilter
 )
