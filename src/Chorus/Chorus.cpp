@@ -27,6 +27,7 @@ Error_t Chorus::init(float sampleRate)
 	auto maxDepth = int{ CUtil::float2int<int>(mSampleRate * mParamRanges[static_cast<int>(RangedParameter::Depth)][1] / 1000.0f) };
 	mDelayLine.reset(new CRingBuffer<float>(1 + maxDelay + maxDepth));
 	mLfo.reset(new Lfo(mSampleRate));
+	mLfo->setParam(Lfo::Param_t::phaseInRadians, M_PI / 2.0f);
 	mIsInitialized = true;
 	return Error_t::kNoError;
 }
@@ -50,6 +51,7 @@ Error_t Chorus::setDelay(float newDelayInMs)
 	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f};
 	auto newDc = float{ newDelayInSamp + mLfo->getParam(Lfo::Param_t::amplitude) };
 	mLfo->setParam(Lfo::Param_t::dc, -1.0f * newDc);
+	return Error_t::kNoError;
 }
 
 Error_t Chorus::setDepth(float newDepthInMs)
