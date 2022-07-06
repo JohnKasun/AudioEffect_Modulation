@@ -8,6 +8,7 @@
 #include "ErrorDef.h"
 #include "Synthesis.h"
 #include "CatchUtil.h"
+#include "Vector.h"
 
 TEST_CASE("Chorus") {
 	auto sampleRate = float{ 44100 };
@@ -32,12 +33,38 @@ TEST_CASE("Chorus") {
 		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
 	SECTION("Zero Depth") {
-		//delayParam = 10;
-		//speedParam = 3;
-		//CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
+		delayParam = 10;
+		speedParam = 3;
+		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
+		auto delayInSamp = int{ CUtil::float2int<int>(delayParam * sampleRate / 1000) };
+		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
+		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
+		chorus->setDelay(delayParam);
+		chorus->setDepth(depthParam);
+		chorus->setSpeed(speedParam);
+		chorus->process(inputBuffer.get(), outputBuffer.get(), numSamples);
+		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
 	SECTION("Zero Speed") {
-
+		delayParam = 10;
+		depthParam = 10;
+		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
+		auto delayInSamp = int{ CUtil::float2int<int>(delayParam * sampleRate / 1000) };
+		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
+		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
+		chorus->setDelay(delayParam);
+		chorus->setDepth(depthParam);
+		chorus->setSpeed(speedParam);
+		chorus->process(inputBuffer.get(), outputBuffer.get(), numSamples);
+		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
+	}
+	SECTION("Update Delay") {
+		chorus->setDelay(10);
+		chorus->setDepth(5);
+		REQUIRE(chorus->getDelay() == 10);
+		REQUIRE(chorus->getDepth() == 5);
+		chorus->setDepth(20);
+		REQUIRE(chorus->getDelay() == 10);
 	}
 	chorus.reset();
 	inputBuffer.reset();

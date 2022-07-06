@@ -82,7 +82,7 @@ Error_t Chorus::setShape(Chorus::Shape newShape)
 
 float Chorus::getDelay() const
 {
-	return (-1.0f * mLfo->getParam(Lfo::Param_t::dc)) - mLfo->getParam(Lfo::Param_t::amplitude) / mSampleRate * 1000.0f;
+	return ((-1.0f * mLfo->getParam(Lfo::Param_t::dc)) - mLfo->getParam(Lfo::Param_t::amplitude)) / mSampleRate * 1000.0f;
 }
 
 float Chorus::getDepth() const
