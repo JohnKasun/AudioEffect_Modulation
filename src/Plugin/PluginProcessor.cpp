@@ -9,8 +9,9 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     ),
     mParameters(*this, nullptr, juce::Identifier("Parameters"),
         {
-            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 15.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f)
+            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 50.0f, 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 0.0f, 20.0f, 0.0f)
         })
 {
     mDepthParam = mParameters.getRawParameterValue("depth");
@@ -77,16 +78,12 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 //==============================================================================
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    for (auto& chorus : mChorus) {
-        chorus.init(sampleRate);
-    }
+
 }
 
 void AudioPluginAudioProcessor::releaseResources()
 {
-    for (auto& chorus : mChorus) {
-        chorus.reset();
-    }
+
 }
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -109,6 +106,7 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
 
     for (auto& chorus : mChorus) {
+        chorus.setDelay(*mDelayParam);
         chorus.setDepth(*mDepthParam);
         chorus.setSpeed(*mSpeedParam);
     }

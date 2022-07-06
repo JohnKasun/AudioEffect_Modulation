@@ -53,6 +53,7 @@ private:
 
     std::atomic<float>* mDepthParam = nullptr;
     std::atomic<float>* mSpeedParam = nullptr;
+    std::atomic<float>* mDelayParam = nullptr;
 
     std::array<Chorus, 2> mChorus;
     //==============================================================================
