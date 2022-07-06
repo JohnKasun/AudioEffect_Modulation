@@ -7,7 +7,28 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
 {
     juce::ignoreUnused(processorRef);
 
-    setSize(paramControlWidth * 2, paramControlHeight + paramLabelHeight);
+    addAndMakeVisible(mDepthSlider);
+    mDepthSliderAttachment.reset(new SliderAttachment(mValueTreeState, "depth", mDepthSlider));
+    mDepthSlider.setName("Depth");
+    mDepthSlider.setSliderStyle(juce::Slider::Rotary);
+    mDepthSlider.setLookAndFeel(&mMyLookAndFeel);
+    mDepthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+
+    addAndMakeVisible(mSpeedSlider);
+    mSpeedSliderAttachment.reset(new SliderAttachment(mValueTreeState, "speed", mSpeedSlider));
+    mSpeedSlider.setName("Speed");
+    mSpeedSlider.setSliderStyle(juce::Slider::Rotary);
+    mSpeedSlider.setLookAndFeel(&mMyLookAndFeel);
+    mSpeedSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+
+    addAndMakeVisible(mDelaySlider);
+    mDelaySliderAttachment.reset(new SliderAttachment(mValueTreeState, "delay", mDelaySlider));
+    mDelaySlider.setName("Delay");
+    mDelaySlider.setSliderStyle(juce::Slider::Rotary);
+    mDelaySlider.setLookAndFeel(&mMyLookAndFeel);
+    mDelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+
+    setSize(paramControlWidth * 3, paramControlHeight + paramLabelHeight);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -23,5 +44,11 @@ void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g)
 void AudioPluginAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds();
-    auto freqArea = area.removeFromLeft(paramControlWidth);
+    auto DepthArea = area.removeFromLeft(paramControlWidth);
+    auto SpeedArea = area.removeFromLeft(paramControlWidth);
+    auto DelayArea = area;
+
+    mDepthSlider.setBounds(DepthArea);
+    mSpeedSlider.setBounds(SpeedArea);
+    mDelaySlider.setBounds(DelayArea);
 }

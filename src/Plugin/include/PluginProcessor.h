@@ -50,6 +50,9 @@ private:
 
     juce::AudioProcessorValueTreeState mParameters;
 
+    std::atomic<float>* mDepthParam = nullptr;
+    std::atomic<float>* mSpeedParam = nullptr;
+    std::atomic<float>* mDelayParam = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)

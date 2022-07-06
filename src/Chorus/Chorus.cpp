@@ -48,7 +48,7 @@ Error_t Chorus::setDelay(float newDelayInMs)
 	if (!isParamInRange(RangedParameter::Delay, newDelayInMs))
 		return Error_t::kFunctionInvalidArgsError;
 
-	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f};
+	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f };
 	auto newDc = float{ newDelayInSamp + mLfo->getParam(Lfo::Param_t::amplitude) };
 	mLfo->setParam(Lfo::Param_t::dc, -1.0f * newDc);
 	return Error_t::kNoError;

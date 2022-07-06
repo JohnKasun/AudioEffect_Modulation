@@ -30,5 +30,14 @@ private:
 
     AudioPluginAudioProcessor& processorRef;
 
+    juce::Slider mDepthSlider;
+    std::unique_ptr<SliderAttachment> mDepthSliderAttachment;
+
+    juce::Slider mSpeedSlider;
+    std::unique_ptr<SliderAttachment> mSpeedSliderAttachment;
+
+    juce::Slider mDelaySlider;
+    std::unique_ptr<SliderAttachment> mDelaySliderAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

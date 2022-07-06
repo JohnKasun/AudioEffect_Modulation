@@ -65,6 +65,7 @@ TEST_CASE("Chorus") {
 		REQUIRE(chorus->getDepth() == 5);
 		chorus->setDepth(20);
 		REQUIRE(chorus->getDelay() == 10);
+		REQUIRE(chorus->getDepth() == 20);
 	}
 	chorus.reset();
 	inputBuffer.reset();
