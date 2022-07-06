@@ -85,5 +85,16 @@ public:
 
         return Error_t::kNoError;
     }
+    static Error_t generateTri(float* pfOutBuf, int iLength, float fAmplitude = 1.F)
+    {
+        if (!pfOutBuf)
+            return Error_t::kFunctionInvalidArgsError;
+
+        auto numRampUp = int{ iLength / 2 + 1 };
+        for (int i = 0; i <= numRampUp; i++) {
+            pfOutBuf[i] = fAmplitude * static_cast<float>(i) / numRampUp;
+        }
+        // TODO: other half of tri
+    }
 };
 #endif // __Synthesis_hdr__
