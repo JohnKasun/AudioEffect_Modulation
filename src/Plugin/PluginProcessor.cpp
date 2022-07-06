@@ -9,14 +9,12 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     ),
     mParameters(*this, nullptr, juce::Identifier("Parameters"),
         {
-            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 20.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 0.0f, 20.0f, 0.0f)
+            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 15.0f, 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f)
         })
 {
     mDepthParam = mParameters.getRawParameterValue("depth");
     mSpeedParam = mParameters.getRawParameterValue("speed");
-    mDelayParam = mParameters.getRawParameterValue("delay");
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -113,7 +111,6 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     for (auto& chorus : mChorus) {
         chorus.setDepth(*mDepthParam);
         chorus.setSpeed(*mSpeedParam);
-        chorus.setDelay(*mDelayParam);
     }
     
     auto inputBuffer = getBusBuffer(buffer, true, 0);

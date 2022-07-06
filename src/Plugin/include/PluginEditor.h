@@ -36,8 +36,5 @@ private:
     juce::Slider mSpeedSlider;
     std::unique_ptr<SliderAttachment> mSpeedSliderAttachment;
 
-    juce::Slider mDelaySlider;
-    std::unique_ptr<SliderAttachment> mDelaySliderAttachment;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };
