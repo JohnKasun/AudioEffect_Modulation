@@ -3,7 +3,7 @@
 Chorus::Chorus()
 {
 	mParamRanges[static_cast<int>(RangedParameter::Depth)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 15;
+	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 20;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][0] = 0;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][1] = 1;
 }

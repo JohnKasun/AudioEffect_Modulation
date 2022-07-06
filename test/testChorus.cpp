@@ -18,7 +18,7 @@ TEST_CASE("Chorus") {
 	auto inputBuffer = std::make_unique<float[]>(numSamples);
 	auto outputBuffer = std::make_unique<float[]>(numSamples);
 	auto groundBuffer = std::make_unique<float[]>(numSamples);
-	auto const delay = int{ 1 + CUtil::float2int<int>(sampleRate * 0.015 / 2.0f) };
+	auto const delay = int{ 1 + CUtil::float2int<int>(sampleRate * 0.02 / 2.0f) };
 	auto depthParam = float{ 0 };
 	auto speedParam = float{ 0 };
 	SECTION("Zero Depth") {
