@@ -11,13 +11,14 @@ Lfo::Lfo(float sampleRate){
 
 	mSampleRate = sampleRate;
 
-	for (int i = 0; i < mBufferSize; i++) {
-		// Sine
-		mBuffers.at(Waveform_t::Sine)->putPostInc(sinf(2.0f * M_PI / mBufferSize * i));
+	// Sine
+	float temp[mBufferSize]{};
+	Wavetable::generateSine(temp, mBufferSize);
+	mBuffers.at(Waveform_t::Sine)->putPostInc(temp, mBufferSize);
 
-		// Triangle
-		//mBuffers.at(Waveform_t::Triangle)->putPostInc(value);
-	}
+	// Triangle
+	Wavetable::generateTri(temp, mBufferSize);
+	mBuffers.at(Waveform_t::Triangle)->putPostInc(temp, mBufferSize);
 }
 
 void Lfo::setParam(Param_t param, float value){

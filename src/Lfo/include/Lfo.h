@@ -2,7 +2,7 @@
 
 #include "ErrorDef.h"
 #include "Util.h"
-#include "Synthesis.h"
+#include "Wavetable.h"
 #include "RingBuffer.h"
 
 #include <array>
@@ -38,7 +38,7 @@ public:
 	float process();
 private:
 
-	const size_t mBufferSize = 1 << 9;
+	static const size_t mBufferSize = 1 << 9;
 	std::array<std::unique_ptr<CRingBuffer<float>>, numWaveforms> mBuffers;
 	float mParamValues[numParams]{};
 	Waveform_t mCurrentWaveform = Waveform_t::Sine;
