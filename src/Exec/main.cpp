@@ -61,14 +61,25 @@ int main(int argc, char* argv[])
 		// Create and initialize instance
 		for (int c = 0; c < fileSpec.iNumChannels; c++) {
 			chorus.emplace_back(new Chorus());
-			chorus[c]->init(fileSpec.fSampleRateInHz);
-			chorus[c]->setDelay(20);
-			chorus[c]->setDepth(20);
-			chorus[c]->setSpeed(0.25);
+			if (chorus[c]->init(fileSpec.fSampleRateInHz) != Error_t::kNoError) {
+					throw Exception("Invalid Sample rate...");
+			}
 		}
 
-		// Set parameters
-		// 
+		// Set Parameters
+		for (int c = 0; c < fileSpec.iNumChannels; c++) {
+			chorus.emplace_back(new Chorus());
+			if (chorus[c]->setDepth(20) != Error_t::kNoError) {
+				throw Exception("Invalid Depth Parameter...");
+			}
+			if (chorus[c]->setSpeed(0.25) != Error_t::kNoError) {
+				throw Exception("Invalid Speed Parameter...");
+			}
+			if (chorus[c]->setShape(Chorus::Shape::Triangle) != Error_t::kNoError) {
+				throw Exception("Invalid Shaped...");
+			}
+		}
+
 		// Allocate memory
 		inputAudioData = new float* [fileSpec.iNumChannels]{};
 		outputAudioData = new float* [fileSpec.iNumChannels]{};
@@ -83,7 +94,9 @@ int main(int argc, char* argv[])
 			if (audioFileIn->readData(inputAudioData, iNumFrames) != Error_t::kNoError)
 				throw Exception("Data reading error...");
 			for (int c = 0; c < fileSpec.iNumChannels; c++) {
-				chorus[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames);
+				if (chorus[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames) != Error_t::kNoError) {
+					throw Exception("Processing error...");
+				}
 			}
 			if (audioFileOut->writeData(outputAudioData, iNumFrames) != Error_t::kNoError)
 				throw Exception("Data writing error...");
