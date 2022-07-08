@@ -18,11 +18,11 @@ Error_t Wavetable::generateTri(float* buffer, int size, float amplitude) {
     if (size < 0)
         return Error_t::kFunctionInvalidArgsError;
 
-    auto numRampUp = int{ size / 2 + 1 };
-    for (auto i = 0; i <= numRampUp; i++) {
+    auto numRampUp = int{ size / 2 };
+    for (auto i = 0; i < numRampUp; i++) {
         buffer[i] = amplitude * static_cast<float>(i) / numRampUp;
     }
-    for (auto i = numRampUp + 1; i < size; i++) {
+    for (auto i = numRampUp; i < size; i++) {
         buffer[i] = amplitude * (2.0f - (static_cast<float>(i) / numRampUp));
     }
     return Error_t::kNoError;
