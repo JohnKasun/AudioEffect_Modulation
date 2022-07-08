@@ -17,6 +17,7 @@ Error_t Wavetable::generateTri(float* buffer, int size, float amplitude) {
         return Error_t::kMemError;
     if (size < 0)
         return Error_t::kFunctionInvalidArgsError;
+    assert(size % 2 == 0);
 
     auto numRampUp = int{ size / 4 };
     auto numRampDown = int{ size / 2 };

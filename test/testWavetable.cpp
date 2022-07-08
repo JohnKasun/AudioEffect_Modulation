@@ -28,7 +28,7 @@ void appendToFile(std::ofstream& file, const auto* buffer, const int size) {
 }
 
 TEST_CASE("Print Wavetables") {
-	static const auto size = 100;
+	static const auto size = 101;
 	float buffer[size]{};
 	std::ofstream out_file{};
 	out_file.open("C:/Users/JohnK/Documents/ASE/AudioEffect_Chorus/build/Triangle.csv");
