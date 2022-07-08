@@ -18,9 +18,23 @@ void printBuffer(const std::string& filename, const auto* buffer, const int size
 	out_file.close();
 }
 
-TEST_CASE("Print Triangle") {
+void appendToFile(std::ofstream& file, const auto* buffer, const int size) {
+	if (file) {
+		file << "\n";
+		for (int i = 0; i < size; i++) {
+			file << buffer[i] << ",";
+		}
+	}
+}
+
+TEST_CASE("Print Wavetables") {
 	static const auto size = 100;
 	float buffer[size]{};
+	std::ofstream out_file{};
+	out_file.open("C:/Users/JohnK/Documents/ASE/AudioEffect_Chorus/build/Triangle.csv");
 	Wavetable::generateTri(buffer, size, 2);
-	printBuffer("C:/Users/JohnK/Documents/ASE/AudioEffect_Chorus/build/Triangle.csv", buffer, size);
+	appendToFile(out_file, buffer, size);
+	Wavetable::generateSine(buffer, size, 2);
+	appendToFile(out_file, buffer, size);
+	out_file.close();
 }
