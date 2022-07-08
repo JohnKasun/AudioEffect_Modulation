@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 		// Set Parameters
 		for (int c = 0; c < fileSpec.iNumChannels; c++) {
 			chorus.emplace_back(new Chorus());
+			chorus[c]->setDelay(20);
 			if (chorus[c]->setDepth(20) != Error_t::kNoError) {
 				throw Exception("Invalid Depth Parameter...");
 			}
