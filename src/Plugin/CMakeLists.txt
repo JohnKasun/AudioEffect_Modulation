@@ -35,6 +35,7 @@ target_link_libraries(${APP}
         Chorus
         Utility
         Lfo
+        Modulation
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
