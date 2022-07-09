@@ -18,7 +18,6 @@ target_sources(${APP}
 target_link_libraries(${APP}
         PRIVATE
                 Chorus
-                Utility
                 AudioFileIO
                 Lfo
                 RingBuffer

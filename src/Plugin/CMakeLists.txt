@@ -33,7 +33,6 @@ target_link_libraries(${APP}
     PRIVATE
         juce::juce_audio_utils
         Chorus
-        Utility
         Lfo
         Modulation
     PUBLIC

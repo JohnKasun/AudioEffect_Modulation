@@ -20,6 +20,5 @@ target_link_libraries(${APP}
     PRIVATE
         Lfo
         Chorus
-        Utility
         Modulation
 )

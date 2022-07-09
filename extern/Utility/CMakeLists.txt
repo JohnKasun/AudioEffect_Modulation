@@ -1,10 +1,5 @@
-add_library(Utility 
-    INTERFACE 
-        include/Util.h 
-        include/ErrorDef.h
-        include/Vector.h
-        include/Synthesis.h
-        include/Exception.h
-)
+file(GLOB Utility include/)
 
-target_include_directories(Utility INTERFACE include/)
+foreach(file ${Utility})
+    include(file)
+endforeach(file)

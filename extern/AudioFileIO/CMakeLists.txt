@@ -13,5 +13,4 @@ set_target_properties(${CurrLib} PROPERTIES PREFIX "lib")
 target_link_libraries(${CurrLib} 
     PRIVATE
         sndlib 
-    PUBLIC
-        Utility)
+)
