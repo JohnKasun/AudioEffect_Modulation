@@ -17,13 +17,6 @@ ModulationBase::~ModulationBase()
 	mSampleRate = 1.0f;
 }
 
-Chorus::Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs) :
-	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
-{
-	setDelay(20);
-}
-
-
 void ModulationBase::setDelay(float newDelayInMs)
 {
 	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f };
@@ -74,6 +67,12 @@ void ModulationBase::updateLfoDc(float dAmp)
 	auto oldDc = float{ -1.0f * mLfo->getParam(Lfo::dc) };
 	auto newDc = float{ oldDc + dAmp };
 	mLfo->setParam(Lfo::dc, -1.0f * newDc);
+}
+
+Chorus::Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs) :
+	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+{
+	setDelay(20);
 }
 
 void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)

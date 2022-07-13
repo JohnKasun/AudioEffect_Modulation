@@ -35,7 +35,7 @@ class Chorus : public ModulationBase {
 public:
 
 	Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs);
-	virtual ~Chorus();
+	virtual ~Chorus() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 };

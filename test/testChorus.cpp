@@ -4,17 +4,17 @@
 #include <vector>
 
 #include "catch.hpp"
-#include "Chorus.h"
 #include "ErrorDef.h"
 #include "Synthesis.h"
 #include "CatchUtil.h"
 #include "Vector.h"
+#include "ModulationIf.h"
 
 TEST_CASE("Chorus") {
 	auto sampleRate = float{ 44100 };
 	auto numSamples = int{ 10000 };
-	auto chorus = std::make_unique<Chorus>();
-	chorus->init(sampleRate);
+	auto chorus = std::make_unique<ModulationIf>();
+	chorus->init(sampleRate, ModulationIf::Type::Chorus);
 	auto inputBuffer = std::make_unique<float[]>(numSamples);
 	auto outputBuffer = std::make_unique<float[]>(numSamples);
 	auto groundBuffer = std::make_unique<float[]>(numSamples);

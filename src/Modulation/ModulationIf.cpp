@@ -51,6 +51,16 @@ Error_t ModulationIf::reset()
 	return Error_t::kNoError;
 }
 
+Error_t ModulationIf::setDelay(float newDelay)
+{
+	if (!mIsInitialized)
+		return Error_t::kNotInitializedError;
+	if (!isParamInRange(ModulationIf::RangedParameter::Delay, newDelay))
+		return Error_t::kFunctionInvalidArgsError;
+
+	mMod->setDelay(newDelay);
+}
+
 Error_t ModulationIf::setDepth(float newDepth)
 {
 	if (!mIsInitialized)
@@ -76,6 +86,11 @@ Error_t ModulationIf::setShape(Shape newShape)
 	if (!mIsInitialized)
 		return Error_t::kNotInitializedError;
 	return Error_t();
+}
+
+float ModulationIf::getDelay() const
+{
+	return mMod->getDelay();
 }
 
 float ModulationIf::getDepth() const

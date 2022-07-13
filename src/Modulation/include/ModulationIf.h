@@ -20,10 +20,12 @@ public:
 	Error_t init(float sampleRate, Type type);
 	Error_t reset();
 
+	Error_t setDelay(float newDelay);
 	Error_t setDepth(float newDepth);
 	Error_t setSpeed(float newSpeed);
 	Error_t setShape(Shape newShape);
 
+	float getDelay() const;
 	float getDepth() const;
 	float getSpeed() const;
 	Shape getShape() const;
