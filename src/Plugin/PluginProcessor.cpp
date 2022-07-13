@@ -10,8 +10,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     mParameters(*this, nullptr, juce::Identifier("Parameters"),
         {
             std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 50.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 0.0f, 20.0f, 0.0f)
+            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f)
         })
 {
     mDepthParam = mParameters.getRawParameterValue("depth");
@@ -105,16 +104,15 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     juce::ScopedNoDenormals noDenormals;
 
-    for (auto& chorus : mChorus) {
-        chorus.setDelay(*mDelayParam);
-        chorus.setDepth(*mDepthParam);
-        chorus.setSpeed(*mSpeedParam);
+    for (auto& mod : mModulation) {
+        mod.setDepth(*mDepthParam);
+        mod.setSpeed(*mSpeedParam);
     }
     
     auto inputBuffer = getBusBuffer(buffer, true, 0);
     auto outputBuffer = getBusBuffer(buffer, false, 0);
     for (auto c = 0; c < inputBuffer.getNumChannels(); c++) {
-        mChorus[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
+        mModulation[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
     }
     for (auto c = inputBuffer.getNumChannels(); c < outputBuffer.getNumChannels(); c++) {
         buffer.copyFrom(c, 0, buffer.getReadPointer(0), buffer.getNumSamples());

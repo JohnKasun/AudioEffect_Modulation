@@ -1,16 +1,16 @@
-set(APP ChorusPlugin)
+set(APP ModulationPlugin)
 
 juce_add_plugin(${APP}
     PLUGIN_MANUFACTURER_CODE John
-    PLUGIN_CODE Vbro
+    PLUGIN_CODE Mods
     FORMATS AU AUv3 VST3 Standalone
-    PRODUCT_NAME "Chorus Plugin")
+    PRODUCT_NAME "Modulation Plugin")
 
 file(GLOB ${APP}_SOURCES *.cpp)
 file(GLOB ${APP}_HEADERS include/*.h)
 
 set(${APP}_DEPEND)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Chorus/include/Chorus.h)
+list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Modulation/include/ModulationIf.h)
 
 target_sources(${APP}
     PRIVATE
@@ -32,7 +32,6 @@ target_compile_definitions(${APP}
 target_link_libraries(${APP}
     PRIVATE
         juce::juce_audio_utils
-        Chorus
         Lfo
         Modulation
     PUBLIC
