@@ -77,12 +77,16 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 //==============================================================================
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-
+    for (auto& mod : mModulation) {
+        mod.init(sampleRate, ModulationIf::Type::Chorus);
+    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
 {
-
+    for (auto& mod : mModulation) {
+        mod.reset();
+    }
 }
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const

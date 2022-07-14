@@ -84,3 +84,21 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 		mDelayLine->getPostInc();
 	}
 }
+
+Flanger::Flanger(float sampleRate, float maxDelayInMs, float maxDepthInMs) : 
+	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+{
+}
+
+void Flanger::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
+{
+}
+
+Phaser::Phaser(float sampleRate, float maxDelayInMs, float maxDepthInMs) :
+	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+{
+}
+
+void Phaser::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
+{
+}

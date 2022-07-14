@@ -33,9 +33,24 @@ protected:
 
 class Chorus : public ModulationBase {
 public:
-
 	Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs);
 	virtual ~Chorus() = default;
+
+	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
+};
+
+class Flanger : public ModulationBase {
+public:
+	Flanger(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	virtual ~Flanger() = default;
+
+	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
+};
+
+class Phaser : public ModulationBase {
+public:
+	Phaser(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	virtual ~Phaser() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 };
