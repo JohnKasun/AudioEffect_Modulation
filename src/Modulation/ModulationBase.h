@@ -21,7 +21,7 @@ public:
 	float getSpeed() const;
 	ModulationIf::Shape getShape() const;
 
-	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) = 0;
+	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 protected:
 	float mSampleRate = 1.0f;
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
@@ -34,16 +34,12 @@ class Chorus : public ModulationBase {
 public:
 	Chorus(float sampleRate, float maxDepthInMs);
 	virtual ~Chorus() = default;
-
-	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 };
 
 class Flanger : public ModulationBase {
 public:
 	Flanger(float sampleRate, float maxDepthInMs);
 	virtual ~Flanger() = default;
-
-	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 };
 
 class Phaser : public ModulationBase {

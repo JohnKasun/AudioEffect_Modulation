@@ -29,6 +29,8 @@ Error_t ModulationIf::init(float sampleRate, Type type)
 		mCurrentType = Type::Chorus;
 		break;
 	case Type::Flanger:
+		mMod = new Flanger(sampleRate, maxDepth);
+		mCurrentType = Type::Flanger;
 		break;
 	case Type::Phaser:
 		break;

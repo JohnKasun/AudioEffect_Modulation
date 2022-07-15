@@ -63,12 +63,7 @@ void ModulationBase::updateLfoDc(float dAmp)
 	mLfo->setParam(Lfo::dc, -1.0f * newDc);
 }
 
-Chorus::Chorus(float sampleRate, float maxDepthInMs) :
-	ModulationBase(sampleRate, maxDepthInMs, 20.0f)
-{
-}
-
-void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
+void ModulationBase::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
 {
 	for (int i = 0; i < numSamples; i++) {
 		mDelayLine->putPostInc(inputBuffer[i]);
@@ -78,12 +73,13 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 	}
 }
 
-Flanger::Flanger(float sampleRate, float maxDepthInMs) : 
-	ModulationBase(sampleRate, maxDepthInMs)
+Chorus::Chorus(float sampleRate, float maxDepthInMs) :
+	ModulationBase(sampleRate, maxDepthInMs, 20.0f)
 {
 }
 
-void Flanger::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
+Flanger::Flanger(float sampleRate, float maxDepthInMs) : 
+	ModulationBase(sampleRate, maxDepthInMs)
 {
 }
 
