@@ -10,11 +10,11 @@
 #include "Vector.h"
 #include "ModulationIf.h"
 
-TEST_CASE("Chorus") {
+TEST_CASE("Flanger") {
 	auto sampleRate = float{ 44100 };
 	auto numSamples = int{ 10000 };
-	auto chorus = std::make_unique<ModulationIf>();
-	chorus->init(sampleRate, ModulationIf::Type::Chorus);
+	auto flanger = std::make_unique<ModulationIf>();
+	flanger->init(sampleRate, ModulationIf::Type::Flanger);
 	auto inputBuffer = std::make_unique<float[]>(numSamples);
 	auto outputBuffer = std::make_unique<float[]>(numSamples);
 	auto groundBuffer = std::make_unique<float[]>(numSamples);
@@ -23,34 +23,36 @@ TEST_CASE("Chorus") {
 	SECTION("Zero Depth") {
 		speedParam = 1;
 		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		auto delayInSamp = int{ CUtil::float2int<int>(chorus->getDelay() * sampleRate / 1000)};
+		auto delayInSamp = int{ CUtil::float2int<int>(flanger->getDelay() * sampleRate / 1000)};
 		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
 		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
-		chorus->setDepth(depthParam);
-		chorus->setSpeed(speedParam);
-		chorus->process(inputBuffer.get(), outputBuffer.get(), numSamples);
+		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
+		flanger->setDepth(depthParam);
+		flanger->setSpeed(speedParam);
+		flanger->process(inputBuffer.get(), outputBuffer.get(), numSamples);
 		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
 	SECTION("Zero Speed") {
 		depthParam = 10;
 		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		auto delayInSamp = int{ CUtil::float2int<int>(chorus->getDelay() * sampleRate / 1000)};
+		auto delayInSamp = int{ CUtil::float2int<int>(flanger->getDelay() * sampleRate / 1000)};
 		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
 		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
-		chorus->setDepth(depthParam);
-		chorus->setSpeed(speedParam);
-		chorus->process(inputBuffer.get(), outputBuffer.get(), numSamples);
+		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
+		flanger->setDepth(depthParam);
+		flanger->setSpeed(speedParam);
+		flanger->process(inputBuffer.get(), outputBuffer.get(), numSamples);
 		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
 	SECTION("Update Delay") {
-		chorus->setDepth(5);
-		REQUIRE(chorus->getDelay() == 20);
-		REQUIRE(chorus->getDepth() == 5);
-		chorus->setDepth(20);
-		REQUIRE(chorus->getDelay() == 20);
-		REQUIRE(chorus->getDepth() == 20);
+		flanger->setDepth(5);
+		REQUIRE(flanger->getDelay() == 0);
+		REQUIRE(flanger->getDepth() == 5);
+		flanger->setDepth(20);
+		REQUIRE(flanger->getDelay() == 0);
+		REQUIRE(flanger->getDepth() == 20);
 	}
-	chorus.reset();
+	flanger.reset();
 	inputBuffer.reset();
 	outputBuffer.reset();
 	groundBuffer.reset();

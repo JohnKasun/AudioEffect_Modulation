@@ -9,7 +9,7 @@
 
 class ModulationBase {
 public:
-	ModulationBase(float sampleRate, float maxDepthInMs, float delayInMs = 0.0f);
+	ModulationBase(float sampleRate, float maxDepthInMs, float delayInMs = 0.0f, int numLfos = 1);
 	~ModulationBase();
 
 	void setDepth(float newDepthInMs);
@@ -25,9 +25,9 @@ public:
 protected:
 	float mSampleRate = 1.0f;
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
-	std::unique_ptr<Lfo> mLfo;
+	std::vector<std::unique_ptr<Lfo>> mLfo;
 
-	void updateLfoDc(float dAmp);
+	void updateLfoDc(std::unique_ptr<Lfo>& lfo, float dAmp);
 };
 
 class Chorus : public ModulationBase {

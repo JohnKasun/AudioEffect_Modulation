@@ -68,10 +68,10 @@ int main(int argc, char* argv[])
 
 		// Set Parameters
 		for (int c = 0; c < fileSpec.iNumChannels; c++) {
-			if (modulation[c]->setDepth(20) != Error_t::kNoError) {
+			if (modulation[c]->setDepth(10) != Error_t::kNoError) {
 				throw Exception("Invalid Depth Parameter...");
 			}
-			if (modulation[c]->setSpeed(0.25) != Error_t::kNoError) {
+			if (modulation[c]->setSpeed(0.5) != Error_t::kNoError) {
 				throw Exception("Invalid Speed Parameter...");
 			}
 		}
