@@ -20,7 +20,6 @@ public:
 	Error_t init(float sampleRate, Type type);
 	Error_t reset();
 
-	Error_t setDelay(float newDelay);
 	Error_t setDepth(float newDepth);
 	Error_t setSpeed(float newSpeed);
 	Error_t setShape(Shape newShape);
@@ -33,7 +32,6 @@ public:
 	Error_t process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 private:
 	enum class RangedParameter {
-		Delay,
 		Depth,
 		Speed,
 

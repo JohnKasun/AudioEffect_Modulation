@@ -9,10 +9,9 @@
 
 class ModulationBase {
 public:
-	ModulationBase(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	ModulationBase(float sampleRate, float maxDepthInMs, float delayInMs = 0.0f);
 	~ModulationBase();
 
-	void setDelay(float newDelayInMs);
 	void setDepth(float newDepthInMs);
 	void setSpeed(float newSpeedInHz);
 	void setShape(ModulationIf::Shape newShape);
@@ -33,7 +32,7 @@ protected:
 
 class Chorus : public ModulationBase {
 public:
-	Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	Chorus(float sampleRate, float maxDepthInMs);
 	virtual ~Chorus() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
@@ -41,7 +40,7 @@ public:
 
 class Flanger : public ModulationBase {
 public:
-	Flanger(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	Flanger(float sampleRate, float maxDepthInMs);
 	virtual ~Flanger() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
@@ -49,7 +48,7 @@ public:
 
 class Phaser : public ModulationBase {
 public:
-	Phaser(float sampleRate, float maxDelayInMs, float maxDepthInMs);
+	Phaser(float sampleRate, float maxDepthInMs);
 	virtual ~Phaser() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;

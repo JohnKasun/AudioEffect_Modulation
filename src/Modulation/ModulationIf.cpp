@@ -4,8 +4,6 @@
 
 ModulationIf::ModulationIf()
 {
-	mParamRanges[static_cast<int>(RangedParameter::Delay)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Delay)][1] = 20;
 	mParamRanges[static_cast<int>(RangedParameter::Depth)][0] = 0;
 	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 20;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][0] = 0;
@@ -24,11 +22,10 @@ Error_t ModulationIf::init(float sampleRate, Type type)
 
 	reset();
 
-	auto maxDelay = mParamRanges[static_cast<int>(RangedParameter::Delay)][1];
 	auto maxDepth = mParamRanges[static_cast<int>(RangedParameter::Depth)][1];
 	switch (type) {
 	case Type::Chorus:
-		mMod = new Chorus(sampleRate, maxDelay, maxDepth);
+		mMod = new Chorus(sampleRate, maxDepth);
 		mCurrentType = Type::Chorus;
 		break;
 	case Type::Flanger:
@@ -51,16 +48,6 @@ Error_t ModulationIf::reset()
 	return Error_t::kNoError;
 }
 
-Error_t ModulationIf::setDelay(float newDelay)
-{
-	if (!mIsInitialized)
-		return Error_t::kNotInitializedError;
-	if (!isParamInRange(ModulationIf::RangedParameter::Delay, newDelay))
-		return Error_t::kFunctionInvalidArgsError;
-
-	mMod->setDelay(newDelay);
-}
-
 Error_t ModulationIf::setDepth(float newDepth)
 {
 	if (!mIsInitialized)
@@ -69,6 +56,7 @@ Error_t ModulationIf::setDepth(float newDepth)
 		return Error_t::kFunctionInvalidArgsError;
 
 	mMod->setDepth(newDepth);
+	return Error_t::kNoError;
 }
 
 Error_t ModulationIf::setSpeed(float newSpeed)
@@ -79,6 +67,7 @@ Error_t ModulationIf::setSpeed(float newSpeed)
 		return Error_t::kFunctionInvalidArgsError;
 
 	mMod->setSpeed(newSpeed);
+	return Error_t::kNoError;
 }
 
 Error_t ModulationIf::setShape(Shape newShape)
@@ -118,6 +107,7 @@ Error_t ModulationIf::process(const float const* inputBuffer, float* outputBuffe
 		return Error_t::kFunctionInvalidArgsError;
 
 	mMod->process(inputBuffer, outputBuffer, numSamples);
+	return Error_t::kNoError;
 }
 
 bool ModulationIf::isParamInRange(ModulationIf::RangedParameter param, float value) const

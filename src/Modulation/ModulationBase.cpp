@@ -1,13 +1,14 @@
 #include "ModulationBase.h"
 
-ModulationBase::ModulationBase(float sampleRate, float maxDelayInMs, float maxDepthInMs)
+ModulationBase::ModulationBase(float sampleRate, float maxDepthInMs, float delayInMs)
 {
 	mSampleRate = sampleRate;
-	auto maxDelay = int{ CUtil::float2int<int>(mSampleRate * maxDelayInMs / 1000.0f) };
-	auto maxDepth = int{ CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f) };
-	mDelayLine.reset(new CRingBuffer<float>(1 + maxDelay + maxDepth));
+	auto delayInSamp = int{ CUtil::float2int<int>(mSampleRate * delayInMs / 1000.0f) };
+	auto maxDepthInSamp = int{ CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f) };
+	mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
 	mLfo.reset(new Lfo(mSampleRate));
 	mLfo->setParam(Lfo::Param_t::phaseInRadians, M_PI / 2.0f);
+	mLfo->setParam(Lfo::Param_t::dc, -1.0f * (delayInSamp + mLfo->getParam(Lfo::Param_t::amplitude)));
 }
 
 ModulationBase::~ModulationBase()
@@ -15,13 +16,6 @@ ModulationBase::~ModulationBase()
 	mDelayLine.reset();
 	mLfo.reset();
 	mSampleRate = 1.0f;
-}
-
-void ModulationBase::setDelay(float newDelayInMs)
-{
-	auto newDelayInSamp = float{ newDelayInMs * mSampleRate / 1000.0f };
-	auto newDc = float{ newDelayInSamp + mLfo->getParam(Lfo::Param_t::amplitude) };
-	mLfo->setParam(Lfo::Param_t::dc, -1.0f * newDc);
 }
 
 void ModulationBase::setDepth(float newDepthInMs)
@@ -69,10 +63,9 @@ void ModulationBase::updateLfoDc(float dAmp)
 	mLfo->setParam(Lfo::dc, -1.0f * newDc);
 }
 
-Chorus::Chorus(float sampleRate, float maxDelayInMs, float maxDepthInMs) :
-	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+Chorus::Chorus(float sampleRate, float maxDepthInMs) :
+	ModulationBase(sampleRate, maxDepthInMs, 20.0f)
 {
-	setDelay(20);
 }
 
 void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
@@ -85,8 +78,8 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 	}
 }
 
-Flanger::Flanger(float sampleRate, float maxDelayInMs, float maxDepthInMs) : 
-	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+Flanger::Flanger(float sampleRate, float maxDepthInMs) : 
+	ModulationBase(sampleRate, maxDepthInMs)
 {
 }
 
@@ -94,8 +87,8 @@ void Flanger::process(const float const* inputBuffer, float* outputBuffer, const
 {
 }
 
-Phaser::Phaser(float sampleRate, float maxDelayInMs, float maxDepthInMs) :
-	ModulationBase(sampleRate, maxDelayInMs, maxDepthInMs)
+Phaser::Phaser(float sampleRate, float maxDepthInMs) :
+	ModulationBase(sampleRate, maxDepthInMs)
 {
 }
 
