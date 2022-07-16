@@ -23,7 +23,7 @@ TEST_CASE("Flanger") {
 	SECTION("Zero Depth") {
 		speedParam = 1;
 		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		auto delayInSamp = int{ CUtil::float2int<int>(flanger->getDelay() * sampleRate / 1000)};
+		auto delayInSamp = int{ CUtil::float2int<int>(20.0f * sampleRate / 1000) / 2};
 		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
 		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
 		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
@@ -33,24 +33,15 @@ TEST_CASE("Flanger") {
 		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
 	}
 	SECTION("Zero Speed") {
-		depthParam = 10;
+		depthParam = 20.0f;
 		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		auto delayInSamp = int{ CUtil::float2int<int>(flanger->getDelay() * sampleRate / 1000)};
 		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
-		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
+		CVectorFloat::add_I(groundBuffer.get(), inputBuffer.get(), numSamples);
 		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
 		flanger->setDepth(depthParam);
 		flanger->setSpeed(speedParam);
 		flanger->process(inputBuffer.get(), outputBuffer.get(), numSamples);
 		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
-	}
-	SECTION("Update Delay") {
-		flanger->setDepth(5);
-		REQUIRE(flanger->getDelay() == 0);
-		REQUIRE(flanger->getDepth() == 5);
-		flanger->setDepth(20);
-		REQUIRE(flanger->getDelay() == 0);
-		REQUIRE(flanger->getDepth() == 20);
 	}
 	flanger.reset();
 	inputBuffer.reset();

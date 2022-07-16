@@ -79,11 +79,6 @@ Error_t ModulationIf::setShape(Shape newShape)
 	return Error_t();
 }
 
-float ModulationIf::getDelay() const
-{
-	return mMod->getDelay();
-}
-
 float ModulationIf::getDepth() const
 {
 	return mMod->getDepth();

@@ -24,7 +24,6 @@ public:
 	Error_t setSpeed(float newSpeed);
 	Error_t setShape(Shape newShape);
 
-	float getDelay() const;
 	float getDepth() const;
 	float getSpeed() const;
 	Shape getShape() const;
