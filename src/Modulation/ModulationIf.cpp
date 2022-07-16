@@ -1,13 +1,15 @@
 #include "ModulationIf.h"
 #include "ModulationBase.h"
 
+const float ModulationIf::MaxDepthInMs = 20.0f;
+const float ModulationIf::MaxSpeedInMs = 1.0f;
 
 ModulationIf::ModulationIf()
 {
 	mParamRanges[static_cast<int>(RangedParameter::Depth)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = 20;
+	mParamRanges[static_cast<int>(RangedParameter::Depth)][1] = MaxDepthInMs;
 	mParamRanges[static_cast<int>(RangedParameter::Speed)][0] = 0;
-	mParamRanges[static_cast<int>(RangedParameter::Speed)][1] = 1;
+	mParamRanges[static_cast<int>(RangedParameter::Speed)][1] = MaxSpeedInMs;
 }
 
 ModulationIf::~ModulationIf()
@@ -92,6 +94,16 @@ float ModulationIf::getSpeed() const
 ModulationIf::Shape ModulationIf::getShape() const
 {
 	return Shape();
+}
+
+float ModulationIf::getMaxDepth()
+{
+	return MaxDepthInMs;
+}
+
+float ModulationIf::getMaxSpeed()
+{
+	return MaxSpeedInMs;
 }
 
 Error_t ModulationIf::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)

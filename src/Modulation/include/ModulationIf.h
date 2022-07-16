@@ -28,6 +28,9 @@ public:
 	float getSpeed() const;
 	Shape getShape() const;
 
+	static float getMaxDepth();
+	static float getMaxSpeed();
+
 	Error_t process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 private:
 	enum class RangedParameter {
@@ -43,4 +46,7 @@ private:
 	ModulationBase* mMod = nullptr;
 	bool mIsInitialized = false;
 	Type mCurrentType;
+
+	static const float MaxDepthInMs;
+	static const float MaxSpeedInMs;
 };
