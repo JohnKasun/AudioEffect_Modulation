@@ -27,7 +27,7 @@ protected:
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
 	std::vector<std::unique_ptr<Lfo>> mLfo;
 
-	void updateLfoDc(std::unique_ptr<Lfo>& lfo, float dAmp);
+	void updateLfoDc(std::unique_ptr<Lfo>& lfo, float newAmplitude);
 };
 
 class Chorus : public ModulationBase {

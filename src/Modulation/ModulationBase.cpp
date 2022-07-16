@@ -28,7 +28,7 @@ void ModulationBase::setDepth(float newDepthInMs)
 	auto newDepthInSamp = float{ newDepthInMs * mSampleRate / 1000.0f };
 	auto newAmplitude = float{ newDepthInSamp / 2.0f };
 	for (auto& lfo : mLfo) {
-		updateLfoDc(lfo, newAmplitude - lfo->getParam(Lfo::amplitude));
+		updateLfoDc(lfo, newAmplitude);
 		lfo->setParam(Lfo::Param_t::amplitude, newAmplitude);
 	}
 }
@@ -65,8 +65,9 @@ ModulationIf::Shape ModulationBase::getShape() const
 	return ModulationIf::Shape();
 }
 
-void ModulationBase::updateLfoDc(std::unique_ptr<Lfo>& lfo, float dAmp)
+void ModulationBase::updateLfoDc(std::unique_ptr<Lfo>& lfo, float newAmplitude)
 {
+	auto dAmp = newAmplitude - lfo->getParam(Lfo::Param_t::amplitude);
 	auto oldDc = float{ -1.0f * lfo->getParam(Lfo::dc) };
 	auto newDc = float{ oldDc + dAmp };
 	lfo->setParam(Lfo::dc, -1.0f * newDc);
@@ -87,7 +88,7 @@ void ModulationBase::process(const float const* inputBuffer, float* outputBuffer
 }
 
 Chorus::Chorus(float sampleRate, float maxDepthInMs) :
-	ModulationBase(sampleRate, maxDepthInMs, 20.0f, 3)
+	ModulationBase(sampleRate, maxDepthInMs, 20.0f, 7)
 {
 }
 
@@ -103,4 +104,5 @@ Phaser::Phaser(float sampleRate, float maxDepthInMs) :
 
 void Phaser::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
 {
+
 }
