@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 		// Create and initialize instance
 		for (int c = 0; c < fileSpec.iNumChannels; c++) {
 			modulation.emplace_back(new ModulationIf());
-			if (modulation[c]->init(fileSpec.fSampleRateInHz, ModulationIf::Type::Flanger) != Error_t::kNoError) {
+			if (modulation[c]->init(fileSpec.fSampleRateInHz, ModulationIf::Type::Chorus) != Error_t::kNoError) {
 					throw Exception("Invalid Sample rate...");
 			}
 		}
@@ -73,6 +73,9 @@ int main(int argc, char* argv[])
 			}
 			if (modulation[c]->setSpeed(0.25) != Error_t::kNoError) {
 				throw Exception("Invalid Speed Parameter...");
+			}
+			if (modulation[c]->setShape(ModulationIf::Shape::Triangle) != Error_t::kNoError) {
+				throw Exception("Invalid Shape Parameter...");
 			}
 		}
 		
