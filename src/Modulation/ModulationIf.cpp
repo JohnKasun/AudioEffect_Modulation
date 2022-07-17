@@ -35,6 +35,8 @@ Error_t ModulationIf::init(float sampleRate, Type type)
 		mCurrentType = Type::Flanger;
 		break;
 	case Type::Phaser:
+		mMod = new Phaser(sampleRate);
+		mCurrentType = Type::Phaser;
 		break;
 	default:
 		return Error_t::kFunctionInvalidArgsError;

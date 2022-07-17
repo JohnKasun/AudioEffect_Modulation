@@ -28,15 +28,14 @@ protected:
 
 class Chorus : public ModulationBase {
 public:
-	Chorus(float sampleRate, float maxDepthInMs);
+	Chorus(float sampleRate, float maxDepthInMs, int numVoices = 3);
 	virtual ~Chorus() = default;
 
 	virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 protected:
-	Chorus(float sampleRate, float maxDepthInMs, int numLfos);
 	std::unique_ptr<CRingBuffer<float>> mDelayLine;
 private:
-	const float mDelayInMs = 20.0f;
+	static const float DelayInMs;
 };
 
 class Flanger : public Chorus {

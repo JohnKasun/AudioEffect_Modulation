@@ -37,7 +37,17 @@ void ModulationBase::setSpeed(float newSpeedInHz)
 
 void ModulationBase::setShape(ModulationIf::Shape newShape)
 {
-	return void();
+	Lfo::Waveform_t newLfoWaveform;
+	switch (newShape) {
+	case ModulationIf::Shape::Sine:
+		newLfoWaveform = Lfo::Waveform_t::Sine;
+		break;
+	default:
+		newLfoWaveform = Lfo::Waveform_t::Triangle;
+	}
+	for (auto& lfo : mLfo) {
+		lfo->setWaveform(newLfoWaveform);
+	}
 }
 
 float ModulationBase::getDepth() const
@@ -52,22 +62,24 @@ float ModulationBase::getSpeed() const
 
 ModulationIf::Shape ModulationBase::getShape() const
 {
-	return ModulationIf::Shape();
+	switch (mLfo.back()->getWaveform()) {
+	case Lfo::Waveform_t::Sine:
+		return ModulationIf::Shape::Sine;
+	default:
+		return ModulationIf::Shape::Triangle;
+	}
 }
 
-Chorus::Chorus(float sampleRate, float maxDepthInMs, int numLfos) :
-	ModulationBase(sampleRate, numLfos)
+const float Chorus::DelayInMs = 20.0f;
+
+Chorus::Chorus(float sampleRate, float maxDepthInMs, int numVoices) :
+	ModulationBase(sampleRate, numVoices)
 {
-	auto delayInSamp = int{ CUtil::float2int<int>(mSampleRate * mDelayInMs / 1000.0f) };
+	auto delayInSamp = int{ CUtil::float2int<int>(mSampleRate * DelayInMs / 1000.0f) };
 	auto maxDepthInSamp = int{ CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f) };
 	assert(maxDepthInSamp <= delayInSamp);
 	mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp) );
 	mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
-}
-
-Chorus::Chorus(float sampleRate, float maxDepthInMs) :
-	Chorus(sampleRate, maxDepthInMs, 3)
-{
 }
 
 void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples)
@@ -83,7 +95,6 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 		mDelayLine->getPostInc();
 	}
 }
-
 
 Flanger::Flanger(float sampleRate, float maxDepthInMs) : 
 	Chorus(sampleRate, maxDepthInMs, 1)
