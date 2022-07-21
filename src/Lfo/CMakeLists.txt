@@ -1,6 +1,6 @@
 set(CurrLib Lfo)
 
-file(GLOB ${CurrLib}_SOURCES *.cpp)
+file(GLOB ${CurrLib}_SOURCES Lfo.cpp)
 file(GLOB ${CurrLib}_HEADERS include/*.h)
 
 set(${CurrLib}_DEPEND)

@@ -1,6 +1,6 @@
 set(CurrLib Wavetable)
 
-file(GLOB ${CurrLib}_SOURCES *.cpp)
+file(GLOB ${CurrLib}_SOURCES Wavetable.cpp)
 file(GLOB ${CurrLib}_HEADERS include/*.h)
 
 set(${CurrLib}_DEPEND)

@@ -1,13 +1,15 @@
 set(APP ModulationExec)
 
+add_subdirectory(AudioFileIO)
+
 add_executable(${APP})
 
 file(GLOB ${APP}_SOURCES *.cpp)
 file(GLOB ${APP}_HEADERS include/*.h)
 
 set(${APP}_DEPEND)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/extern/AudioFileIO/include/AudioFileIf.h)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Modulation/include/ModulationIf.h)
+list(APPEND ${APP}_DEPEND AudioFileIO/include/AudioFileIO/AudioFileIf.h)
+list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Modulation/include/Modulation/ModulationIf.h)
 
 target_sources(${APP} 
         PRIVATE
@@ -16,7 +18,7 @@ target_sources(${APP}
                 ${${APP}_DEPEND})
 
 target_link_libraries(${APP}
-        PRIVATE
+        PUBLIC
                 AudioFileIO
                 Lfo
                 RingBuffer
