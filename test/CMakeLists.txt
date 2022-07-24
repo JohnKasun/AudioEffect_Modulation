@@ -1,27 +1,27 @@
-set(APP Tests)
-
-add_executable(${APP})
-
-file(GLOB ${APP}_SOURCES *.cpp)
-file(GLOB ${APP}_HEADERS include/*.h; include/*.hpp)
-
-set(${APP}_DEPEND)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Modulation/include/Modulation/ModulationIf.h)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Lfo/include/Lfo.h)
-list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Wavetable/include/Wavetable.h)
-
-target_include_directories(${APP} PUBLIC include)
-target_sources(${APP} 
-    PRIVATE
-        ${${APP}_SOURCES}
-        ${${APP}_HEADERS}
-        ${${APP}_DEPEND}
-        ../src/Modulation/testModulation.cpp
-        ../src/Lfo/testLfo.cpp
-        ../src/Wavetable/testWavetable.cpp
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG main
 )
-target_link_libraries(${APP}
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+set(SRC ${CMAKE_SOURCE_DIR}/src)
+
+add_executable(unit_tests
+                ${SRC}/Modulation/testModulation.cpp
+                ${SRC}/Lfo/testLfo.cpp
+                ${SRC}/Wavetable/testWavetable.cpp)
+
+target_include_directories(unit_tests PRIVATE include)
+
+target_link_libraries(unit_tests
     PRIVATE
         Lfo
         Modulation
+        gtest_main
 )
+
+include(GoogleTest)
+gtest_discover_tests(unit_tests)

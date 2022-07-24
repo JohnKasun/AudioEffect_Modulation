@@ -1,48 +1,47 @@
 #pragma once
 
-#include "ErrorDef.h"
-#include "Util.h"
-#include "Wavetable.h"
-#include "RingBuffer.h"
-
 #include <array>
 #include <memory>
 
-class Lfo
-{
-public:
-	enum Param_t {
-		amplitude,
-		freqInHz,
-		phaseInRadians,
-		dc,
+#include "ErrorDef.h"
+#include "RingBuffer.h"
+#include "Util.h"
+#include "Wavetable.h"
 
-		numParams
-	};
+class Lfo {
+ public:
+  enum Param_t {
+    amplitude,
+    freqInHz,
+    phaseInRadians,
+    dc,
 
-	enum Waveform_t {
-		Sine,
-		Triangle,
+    numParams
+  };
 
-		numWaveforms
-	};
+  enum Waveform_t {
+    Sine,
+    Triangle,
 
-	Lfo(float sampleRate);
-	~Lfo() = default;
+    numWaveforms
+  };
 
-	void setParam(Param_t param, float value);
-	void setWaveform(Waveform_t waveform);
-	float getParam(Param_t param) const;
-	Waveform_t getWaveform() const;
+  Lfo(float sampleRate);
+  ~Lfo() = default;
 
-	float process();
-private:
+  void setParam(Param_t param, float value);
+  void setWaveform(Waveform_t waveform);
+  float getParam(Param_t param) const;
+  Waveform_t getWaveform() const;
 
-	static const size_t mBufferSize = 1 << 9;
-	std::array<std::unique_ptr<CRingBuffer<float>>, numWaveforms> mBuffers;
-	float mParamValues[numParams]{};
-	Waveform_t mCurrentWaveform = Waveform_t::Sine;
+  float process();
 
-	float mSampleRate = 44100.0f;
-	float mCurrentIndex = 0.0f;
+ private:
+  static const size_t mBufferSize = 1 << 9;
+  std::array<std::unique_ptr<CRingBuffer<float>>, numWaveforms> mBuffers;
+  float mParamValues[numParams]{};
+  Waveform_t mCurrentWaveform = Waveform_t::Sine;
+
+  float mSampleRate = 44100.0f;
+  float mCurrentIndex = 0.0f;
 };

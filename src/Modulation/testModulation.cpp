@@ -1,50 +1,67 @@
 #pragma once
 
+#include <gtest/gtest.h>
+
 #include <memory>
 #include <vector>
 
-#include "catch.hpp"
 #include "ErrorDef.h"
-#include "Synthesis.h"
-#include "CatchUtil.h"
-#include "Vector.h"
+#include "GTestUtil.h"
 #include "ModulationIf.h"
+#include "Synthesis.h"
+#include "Vector.h"
 
-TEST_CASE("Flanger") {
-	auto sampleRate = float{ 44100 };
-	auto numSamples = int{ 10000 };
-	auto flanger = std::make_unique<ModulationIf>();
-	flanger->init(sampleRate, ModulationIf::Type::Flanger);
-	auto inputBuffer = std::make_unique<float[]>(numSamples);
-	auto outputBuffer = std::make_unique<float[]>(numSamples);
-	auto groundBuffer = std::make_unique<float[]>(numSamples);
-	auto depthParam = float{ 0 };
-	auto speedParam = float{ 0 };
-	SECTION("Zero Depth") {
-		speedParam = 1;
-		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		auto delayInSamp = int{ CUtil::float2int<int>(ModulationIf::getMaxDepth() * sampleRate / 1000) / 2};
-		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
-		CVectorFloat::add_I(groundBuffer.get() + delayInSamp, inputBuffer.get(), numSamples - delayInSamp);
-		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
-		flanger->setDepth(depthParam);
-		flanger->setSpeed(speedParam);
-		flanger->process(inputBuffer.get(), outputBuffer.get(), numSamples);
-		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
-	}
-	SECTION("Zero Speed") {
-		depthParam = 20.0f;
-		CSynthesis::generateSine(inputBuffer.get(), 440, sampleRate, numSamples);
-		CVectorFloat::copy(groundBuffer.get(), inputBuffer.get(), numSamples);
-		CVectorFloat::add_I(groundBuffer.get(), inputBuffer.get(), numSamples);
-		CVectorFloat::mulC_I(groundBuffer.get(), 0.5f, numSamples);
-		flanger->setDepth(depthParam);
-		flanger->setSpeed(speedParam);
-		flanger->process(inputBuffer.get(), outputBuffer.get(), numSamples);
-		CatchUtil::compare(outputBuffer.get(), groundBuffer.get(), numSamples);
-	}
-	flanger.reset();
-	inputBuffer.reset();
-	outputBuffer.reset();
-	groundBuffer.reset();
+class ModulationTestSuite : public ::testing::Test {
+ protected:
+  virtual void SetUp() override {
+    mSampleRate = float{44100};
+    mNumSamples = int{10000};
+    mMod = std::make_unique<ModulationIf>();
+    mInputBuffer.reset(new float[mNumSamples]{});
+    mOutputBuffer.reset(new float[mNumSamples]{});
+    mGroundBuffer.reset(new float[mNumSamples]{});
+    mDepthParam = float{0};
+    mSpeedParam = float{0};
+  }
+  float mSampleRate;
+  int mNumSamples;
+  float mDepthParam;
+  float mSpeedParam;
+  std::unique_ptr<ModulationIf> mMod;
+  std::unique_ptr<float[]> mInputBuffer;
+  std::unique_ptr<float[]> mOutputBuffer;
+  std::unique_ptr<float[]> mGroundBuffer;
+};
+
+class FlangerTestSuite : public ModulationTestSuite {
+ protected:
+  void SetUp() override {
+    ModulationTestSuite::SetUp();
+    mMod->init(mSampleRate, ModulationIf::Type::Flanger);
+  }
+};
+
+TEST_F(FlangerTestSuite, ZeroDepth) {
+  mSpeedParam = 1;
+  CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
+  auto delayInSamp = int{CUtil::float2int<int>(ModulationIf::getMaxDepth() * mSampleRate / 1000) / 2};
+  CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+  CVectorFloat::add_I(mGroundBuffer.get() + delayInSamp, mInputBuffer.get(), mNumSamples - delayInSamp);
+  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
+  mMod->setDepth(mDepthParam);
+  mMod->setSpeed(mSpeedParam);
+  mMod->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+  GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
+}
+
+TEST_F(FlangerTestSuite, ZeroSpeed) {
+  mDepthParam = 20.0f;
+  CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
+  CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+  CVectorFloat::add_I(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
+  mMod->setDepth(mDepthParam);
+  mMod->setSpeed(mSpeedParam);
+  mMod->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+  GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
 }
