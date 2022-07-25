@@ -1,5 +1,5 @@
 add_subdirectory(lib_Lfo)
-add_subdirectory(ModulationConsoleApp)
-add_subdirectory(ModulationPluginApp)
+add_subdirectory(app_ModulationConsole)
+add_subdirectory(app_ModulationPlugin)
 add_subdirectory(lib_Wavetable)
 add_subdirectory(lib_Modulation)

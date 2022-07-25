@@ -1,3 +1,4 @@
-add_library(lib_Lfo STATIC include/Lfo.h Lfo.cpp)
-target_include_directories(lib_Lfo PUBLIC include)
-target_link_libraries(lib_Lfo PUBLIC lib_RingBuffer lib_Wavetable)
+set(LIB lib_Lfo)
+add_library(${LIB} STATIC include/Lfo.h Lfo.cpp)
+target_include_directories(${LIB} PUBLIC include)
+target_link_libraries(${LIB} PUBLIC lib_RingBuffer lib_Wavetable)

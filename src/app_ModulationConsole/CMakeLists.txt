@@ -1,7 +1,8 @@
 add_subdirectory(lib_AudioFileIO)
 
-add_executable(ModulationConsoleApp main.cpp)
-target_link_libraries(ModulationConsoleApp
+set(APP app_ModulationConsole)
+add_executable(${APP} main.cpp)
+target_link_libraries(${APP}
         PUBLIC
                 lib_AudioFileIO
                 lib_Lfo
