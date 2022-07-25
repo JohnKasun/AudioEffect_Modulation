@@ -1,15 +1,15 @@
 set(SRC ${CMAKE_SOURCE_DIR}/src)
 add_executable(unit_tests
-                ${SRC}/Modulation/testModulation.cpp
-                ${SRC}/Lfo/testLfo.cpp
-                ${SRC}/Wavetable/testWavetable.cpp)
+                ${SRC}/lib_Modulation/testModulation.cpp
+                ${SRC}/lib_Lfo/testLfo.cpp
+                ${SRC}/lib_Wavetable/testWavetable.cpp)
 
 target_include_directories(unit_tests PRIVATE include)
 
 target_link_libraries(unit_tests
     PRIVATE
-        Lfo
-        Modulation
+        lib_Lfo
+        lib_Modulation
         gtest_main
 )
 

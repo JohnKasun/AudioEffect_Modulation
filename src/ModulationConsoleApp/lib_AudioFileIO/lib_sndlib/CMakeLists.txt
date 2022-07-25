@@ -1,10 +1,10 @@
-set(CurrLib sndlib)
+set(CurrLib lib_sndlib)
 
 file(GLOB ${CurrLib}_SOURCES *.c;*.cpp;*.txt)
 file(GLOB ${CurrLib}_HEADERS *.h)
 
 # remove the files with main functions
-file(GLOB to_remove RELATIVE ${CMAKE_SOURCE_DIR}/extern/${CurrLib} *sndplay.c;*sndinfo.c)
+file(GLOB to_remove RELATIVE ${CMAKE_SOURCE_DIR}/src/ModulationConsoleApp/lib_AudioFileIO/${CurrLib} *sndplay.c;*sndinfo.c)
 list(REMOVE_ITEM ${CurrLib}_SOURCES ${to_remove})
 
 add_library(${CurrLib} STATIC ${${CurrLib}_SOURCES} ${${CurrLib}_HEADERS})

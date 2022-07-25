@@ -6,6 +6,7 @@
 #include "Lfo.h"
 #include "ModulationIf.h"
 #include "RingBuffer.h"
+#include "APFilter.h"
 
 class ModulationBase {
  public:

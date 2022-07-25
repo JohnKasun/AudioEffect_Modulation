@@ -1,1 +1,1 @@
-add_subdirectory(RingBuffer)
+add_subdirectory(lib_RingBuffer)
