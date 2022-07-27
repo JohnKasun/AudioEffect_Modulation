@@ -12,7 +12,7 @@ class APFilter {
   float process(float input);
 
  private:
-  CRingBuffer<float> mInputDelayLine;
-  CRingBuffer<float> mOutputDelayLine;
+  float mPrevInput = 0.0f;
+  float mPrevOutput = 0.0f;
   float mGain = 1.0f;
 };
