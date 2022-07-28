@@ -1,13 +1,15 @@
 #include "APFilter.h"
 
-APFilter::APFilter() {
-}
+APFilter::APFilter() : mInputDelayLine(1), mOutputDelayLine(1) {}
 
 APFilter::~APFilter() {
 }
 
-void APFilter::setGain(float newGain) {
+Error_t APFilter::setGain(float newGain) {
+  if (newGain < -1 || newGain > 1) return Error_t::kFunctionInvalidArgsError;
+
   mGain = newGain;
+  return Error_t::kNoError;
 }
 
 float APFilter::getGain() const {
