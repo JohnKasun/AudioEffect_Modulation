@@ -62,4 +62,22 @@ TEST_F(APFilterTestSuite, DC) {
   GTestUtil::compare(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples, 1E-3);
 }
 
+TEST_F(APFilterTestSuite, Nyquist) {
+  float f = 24000;
+  float fb = 6000;
+  EXPECT_EQ(fb, f);
+  float fs = 48000;
+  float a = calculateA(fb, fs);
+
+  CSynthesis::generateSine(mInputBuffer.get(), f, fs, mNumSamples);
+  CSynthesis::generateSine(mGroundBuffer.get(), f, fs, mNumSamples, 1, -1.0 * M_PI);  // phase shift by -pi
+  auto samplesPerCycle = int{CUtil::float2int<int>(fs / f)};
+  mFilter.setGain(a);
+  for (auto i = 0; i < mNumSamples; i++) {
+    mOutputBuffer.get()[i] = mFilter.process(mInputBuffer.get()[i]);
+  }
+  EXPECT_TRUE(samplesPerCycle < mNumSamples);
+  GTestUtil::compare(mGroundBuffer.get(), mOutputBuffer.get() + samplesPerCycle, mNumSamples - samplesPerCycle, 1E-3);
+}
+
 
