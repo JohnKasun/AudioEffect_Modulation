@@ -31,15 +31,15 @@ class APFilterTestSuite : public ::testing::Test {
 };
 
 TEST_F(APFilterTestSuite, BreakFrequency) { 
-  float f = 6000;
-  float fb = 6000;
+  float f = 10000;
+  float fb = 10000;
   EXPECT_EQ(fb, f);
   float fs = 48000;
   float a = calculateA(fb, fs);
       
   CSynthesis::generateSine(mInputBuffer.get(), f, fs, mNumSamples); 
   CSynthesis::generateSine(mGroundBuffer.get(), f, fs, mNumSamples, 1, -1.0 * M_PI / 2);  // phase shift by -pi/2
-  auto samplesPerCycle = int{CUtil::float2int<int>(fs / f)};
+  auto samplesPerCycle = int{static_cast<int>(ceil(fs / f))};
   mFilter.setGain(a);
   for (auto i = 0; i < mNumSamples; i++) {
     mOutputBuffer.get()[i] = mFilter.process(mInputBuffer.get()[i]);
@@ -50,7 +50,7 @@ TEST_F(APFilterTestSuite, BreakFrequency) {
 
 TEST_F(APFilterTestSuite, DC) {
   float f = 0;
-  float fb = 3000;
+  float fb = 10000;
   float fs = 48000;
   float a = calculateA(fb, fs);
 

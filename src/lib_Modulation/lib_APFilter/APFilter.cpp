@@ -1,23 +1,27 @@
 #include "APFilter.h"
 
-APFilter::APFilter() : mInputDelayLine(1), mOutputDelayLine(1) {}
+APFilter::APFilter(float sampleRate) :
+	mSampleRate(sampleRate) { 
+	mBreakFrequency = mSampleRate / 2.0f;
+}
 
 APFilter::~APFilter() {
 }
 
-Error_t APFilter::setGain(float newGain) {
-  if (newGain < -1 || newGain > 1) return Error_t::kFunctionInvalidArgsError;
+Error_t APFilter::setBreakFrequency(float newBreakFrequency) {
+  if (newBreakFrequency < -1 || newBreakFrequency > 1) return Error_t::kFunctionInvalidArgsError;
 
-  mGain = newGain;
+  //TODO: Calculate how long to output zeros based on breakfrequency and samplerate
+  mBreakFrequency = newBreakFrequency;
   return Error_t::kNoError;
 }
 
-float APFilter::getGain() const {
-  return mGain;
-}
+float APFilter::getBreakFrequency() const { return mBreakFrequency; }
 
 float APFilter::process(float input) {
-  auto output = (mGain * input) - (mGain * mPrevOutput) + mPrevInput;
+	//TODO: Implement some form of delay
+  float a = (tanf(M_PI * mBreakFrequency / mSampleRate) - 1) / (tanf(M_PI * mBreakFrequency / mSampleRate) + 1);
+  auto output = (a * input) - (a * mPrevOutput) + mPrevInput;
   mPrevInput = input;
   mPrevOutput = output;
   return output;
