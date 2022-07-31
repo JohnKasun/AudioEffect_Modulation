@@ -28,7 +28,8 @@ class APFilter {
   float mPrevInput = 0.0f;
   float mPrevOutput = 0.0f;
   float mSampleRate = 1.0f;
-  int mInitialDelay = 0.0f;
+  int mLatency = 0;
+  int mLatencyCounter = 0;
 
   bool isParamInRange(Param param, float value);
 };
