@@ -40,7 +40,7 @@ TEST_F(APFilterTestSuite, BreakFrequency) {
   CSynthesis::generateSine(mInputBuffer.get(), f, fs, mNumSamples); 
   CSynthesis::generateSine(mGroundBuffer.get(), f, fs, mNumSamples, 1, -1.0 * M_PI / 2);  // phase shift by -pi/2
   auto samplesPerCycle = int{static_cast<int>(ceil(fs / f))};
-  mFilter->setBreakFrequency(fb);
+  mFilter->setParam(APFilter::BreakFreq, fb);
   for (auto i = 0; i < mNumSamples; i++) {
     mOutputBuffer.get()[i] = mFilter->process(mInputBuffer.get()[i]);
   }
@@ -55,7 +55,7 @@ TEST_F(APFilterTestSuite, DC) {
   float a = calculateA(fb, fs);
 
   CSynthesis::generateDc(mInputBuffer.get(), mNumSamples);
-  mFilter->setBreakFrequency(fb);
+  mFilter->setParam(APFilter::BreakFreq, fb);
   for (auto i = 0; i < mNumSamples; i++) {
     mOutputBuffer.get()[i] = mFilter->process(mInputBuffer.get()[i]);
   }

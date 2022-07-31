@@ -9,17 +9,26 @@
 
 class APFilter {
  public:
+  enum Param {
+    BreakFreq,
+
+    numParams
+  };
   APFilter(float sampleRate);
   ~APFilter();
 
-  Error_t setBreakFrequency(float value);
-  float getBreakFrequency() const;
+  Error_t setParam(Param param, float value);
+  float getParam(Param param) const;
+  int getLatency() const;
   float process(float input);
 
  private:
-  int mInitialDelay;
+  float mParamRanges[numParams][2]{};
+  float mParamValues[numParams]{};
   float mPrevInput = 0.0f;
   float mPrevOutput = 0.0f;
   float mSampleRate = 1.0f;
-  float mBreakFrequency;
+  int mInitialDelay = 0.0f;
+
+  bool isParamInRange(Param param, float value);
 };
