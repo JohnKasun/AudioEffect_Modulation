@@ -5,6 +5,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <memory>
 
 class APFilter {
  public:
@@ -16,6 +17,7 @@ class APFilter {
   float process(float input);
 
  private:
+  int mInitialDelay;
   float mPrevInput = 0.0f;
   float mPrevOutput = 0.0f;
   float mSampleRate = 1.0f;
