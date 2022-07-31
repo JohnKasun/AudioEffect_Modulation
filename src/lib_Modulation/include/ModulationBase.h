@@ -13,7 +13,7 @@ class ModulationBase {
   ModulationBase(float sampleRate, int numLfos);
   ~ModulationBase();
 
-  void setDepth(float newDepthInMs);
+  virtual void setDepth(float newDepthInMs);
   void setSpeed(float newSpeedInHz);
   void setShape(ModulationIf::Shape newShape);
 
@@ -53,5 +53,9 @@ class Phaser : public ModulationBase {
   Phaser(float sampleRate);
   virtual ~Phaser() = default;
 
+  virtual void setDepth(float newDepth) override;
   virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
+
+ private:
+  std::vector<std::unique_ptr<APFilter>> mFilter;
 };

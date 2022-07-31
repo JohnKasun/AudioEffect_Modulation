@@ -12,7 +12,7 @@
 class APFilterTestSuite : public ::testing::Test {
  protected:
   void SetUp() override {
-    mNumSamples = 100;
+    mNumSamples = 1000;
     mSampleRate = 48000;
     mInputBuffer.reset(new float[mNumSamples]{});
     mOutputBuffer.reset(new float[mNumSamples]{});

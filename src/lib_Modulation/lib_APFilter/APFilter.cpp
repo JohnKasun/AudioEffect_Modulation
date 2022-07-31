@@ -2,11 +2,11 @@
 
 APFilter::APFilter(float sampleRate) :
 	mSampleRate(sampleRate){ 
-  mParamRanges[BreakFreq][0] = mSampleRate / 16.0f;
+  mParamRanges[BreakFreq][0] = mSampleRate / 256.0f;
   mParamRanges[BreakFreq][1] = mSampleRate / 4.0f;
   mLatency = static_cast<int>(mSampleRate / mParamRanges[BreakFreq][0]);
 
-  mParamValues[BreakFreq] = mSampleRate / 8.0f;
+  mParamValues[BreakFreq] = mSampleRate / 32.0f;
 }
 
 APFilter::~APFilter() {
