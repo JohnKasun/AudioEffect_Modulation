@@ -88,29 +88,3 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 Flanger::Flanger(float sampleRate, float maxDepthInMs) : Chorus(sampleRate, maxDepthInMs, 1) {
   mDelayLine->setWriteIdx(CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f) / 2);
 }
-
-Phaser::Phaser(float sampleRate) : ModulationBase(sampleRate, 3) {
-  for (auto& lfo : mLfo) {
-    mFilter.emplace_back(new APFilter(mSampleRate));
-    lfo->setParam(Lfo::dc, mFilter.back()->getParam(APFilter::BreakFreq));
-  }
-}
-
-void Phaser::setDepth(float newDepth) {
-  auto newAmplitude = float{newDepth / 2.0f};
-  for (auto& lfo : mLfo) {
-    lfo->setParam(Lfo::Param_t::amplitude, newAmplitude);
-  }
-}
-
-void Phaser::process(const float const* inputBuffer, float* outputBuffer, const int numSamples) {
-  for (auto i = 0; i < numSamples; i++) {
-    auto filterCascadeValue = 0.0f;
-    for (int j = 0; j < mFilter.size(); j++) {
-      auto breakFrequency = mLfo[j]->process();
-      mFilter[j]->setParam(APFilter::BreakFreq, breakFrequency);
-      filterCascadeValue += mFilter[j]->process(inputBuffer[i]);
-    }
-    outputBuffer[i] = (inputBuffer[i] + filterCascadeValue) / (mLfo.size() + 1);
-  }
-}

@@ -6,7 +6,6 @@
 #include "Lfo.h"
 #include "ModulationIf.h"
 #include "RingBuffer.h"
-#include "APFilter.h"
 
 class ModulationBase {
  public:
@@ -14,7 +13,7 @@ class ModulationBase {
   ~ModulationBase();
 
   virtual void setDepth(float newDepthInMs);
-  void setSpeed(float newSpeedInHz);
+  virtual void setSpeed(float newSpeedInHz);
   void setShape(ModulationIf::Shape newShape);
 
   float getDepth() const;
@@ -46,16 +45,4 @@ class Flanger : public Chorus {
  public:
   Flanger(float sampleRate, float maxDepthInMs);
   virtual ~Flanger() = default;
-};
-
-class Phaser : public ModulationBase {
- public:
-  Phaser(float sampleRate);
-  virtual ~Phaser() = default;
-
-  virtual void setDepth(float newDepth) override;
-  virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
-
- private:
-  std::vector<std::unique_ptr<APFilter>> mFilter;
 };

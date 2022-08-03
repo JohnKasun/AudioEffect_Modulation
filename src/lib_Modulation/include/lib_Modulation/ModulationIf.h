@@ -5,7 +5,7 @@
 class ModulationBase;
 class ModulationIf {
  public:
-  enum class Type { Chorus, Flanger, Phaser };
+  enum class Type { Chorus, Flanger };
   enum class Shape { Sine, Triangle };
   ModulationIf();
   ~ModulationIf();

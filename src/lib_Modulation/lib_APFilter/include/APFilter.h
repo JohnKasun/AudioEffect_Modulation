@@ -19,8 +19,11 @@ class APFilter {
 
   Error_t setParam(Param param, float value);
   float getParam(Param param) const;
-  int getLatency() const;
   float process(float input);
+
+  float getMaxBreakFrequency() const;
+  float getMinBreakFrequency() const;
+  int getLatency() const;
 
  private:
   float mParamRanges[numParams][2]{};

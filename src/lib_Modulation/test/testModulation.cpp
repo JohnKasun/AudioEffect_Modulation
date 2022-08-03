@@ -65,3 +65,4 @@ TEST_F(FlangerTestSuite, ZeroSpeed) {
   mMod->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
   GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
 }
+
