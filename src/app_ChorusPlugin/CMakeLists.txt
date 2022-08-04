@@ -1,11 +1,11 @@
 add_subdirectory(JUCE)
 
-set(APP app_ModulationPlugin)
+set(APP app_ChorusPlugin)
 juce_add_plugin(${APP}
     PLUGIN_MANUFACTURER_CODE John
-    PLUGIN_CODE Mods
+    PLUGIN_CODE Chrs
     FORMATS AU AUv3 VST3 Standalone
-    PRODUCT_NAME "Modulation Plugin")
+    PRODUCT_NAME "Chorus Plugin")
 
 target_sources(${APP}
     PRIVATE

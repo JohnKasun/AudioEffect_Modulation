@@ -1,6 +1,6 @@
 add_subdirectory(lib_AudioFileIO)
 
-set(APP app_ModulationConsole)
+set(APP app_ChorusConsole)
 add_executable(${APP} main.cpp)
 target_link_libraries(${APP}
         PUBLIC
