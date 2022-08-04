@@ -4,7 +4,7 @@ Chorus::Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int max
   if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");
   if (maxDepthInMs < 0.0f) throw Exception("Invalid Maximum Depth");
   if (maxSpeedInHz < 0.0f) throw Exception("Invalid Maximum Speed");
-  if (maxDepthInMs < 0) throw Exception("Invalid Number of Voices");
+  if (maxNumVoices < 0) throw Exception("Invalid Number of Voices");
 
   mSampleRate = sampleRate;
   mMaxDepthInMs = maxDepthInMs;
@@ -92,9 +92,12 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
   for (int i = 0; i < numSamples; i++) {
     mDelayLine->putPostInc(inputBuffer[i]);
     auto delaySum = float{0.0f};
-    for (auto& lfo : mLfo) {
-      auto offset = float{lfo->process()};
+    for (auto i = 0; i < mVoicesParam; i++) {
+      auto offset = mLfo[i]->process();
       delaySum += mDelayLine->get(offset);
+    }
+    for (auto i = mVoicesParam; i < mLfo.size(); i++) {
+      mLfo[i]->process(); // Dummy call to keep lfos in sync
     }
     outputBuffer[i] = (inputBuffer[i] + delaySum) / (mLfo.size() + 1);
     mDelayLine->getPostInc();
