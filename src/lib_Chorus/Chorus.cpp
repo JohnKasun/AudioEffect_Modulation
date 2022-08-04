@@ -1,11 +1,16 @@
 #include "Chorus.h"
 
-Chorus::Chorus(float sampleRate, float maxDepthInMs, int maxNumVoices) {
+Chorus::Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int maxNumVoices) {
   if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");
   if (maxDepthInMs < 0.0f) throw Exception("Invalid Maximum Depth");
+  if (maxSpeedInHz < 0.0f) throw Exception("Invalid Maximum Speed");
   if (maxDepthInMs < 0) throw Exception("Invalid Number of Voices");
 
   mSampleRate = sampleRate;
+  mMaxDepthInMs = maxDepthInMs;
+  mMaxSpeedInHz = maxSpeedInHz;
+  mMaxNumVoices = maxNumVoices;
+
   auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / maxNumVoices};
   auto phaseAccum = float{static_cast<float>(M_PI / 2.0f)};
   for (auto i = 0; i < maxNumVoices; i++) {
@@ -21,13 +26,10 @@ Chorus::Chorus(float sampleRate, float maxDepthInMs, int maxNumVoices) {
   mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
 }
 
-Chorus::~Chorus() {
-  mLfo.clear();
-  mSampleRate = 1.0f;
-}
+Chorus::~Chorus() {}
 
 void Chorus::setDepth(float newDepthInMs) {
-  if (newDepthInMs < 0.0f) throw Exception("Invalid Depth Parameter");
+  if (newDepthInMs < 0.0f || newDepthInMs > mMaxDepthInMs) throw Exception("Invalid Depth Parameter");
 
   auto newDepthInSamp = float{newDepthInMs * mSampleRate / 1000.0f};
   auto newAmplitude = float{newDepthInSamp / 2.0f};
@@ -37,11 +39,17 @@ void Chorus::setDepth(float newDepthInMs) {
 }
 
 void Chorus::setSpeed(float newSpeedInHz) {
-  if (newSpeedInHz < 0.0f) throw Exception("Invalid Speed Parameter");
+  if (newSpeedInHz < 0.0f || newSpeedInHz > mMaxSpeedInHz) throw Exception("Invalid Speed Parameter");
 
   for (auto& lfo : mLfo) {
     lfo->setParam(Lfo::Param_t::freqInHz, newSpeedInHz);
   }
+}
+
+void Chorus::setNumVoices(int newNumVoices) {
+  if (newNumVoices < 0 || newNumVoices > mMaxNumVoices) throw Exception("Invalid Number Of Voices");
+
+  mVoicesParam = newNumVoices;
 }
 
 void Chorus::setShape(Chorus::Shape newShape) {
@@ -63,8 +71,9 @@ float Chorus::getDepth() const {
 }
 
 float Chorus::getSpeed() const {
-  return mLfo.back()->getParam(Lfo::Param_t::freqInHz);
-}
+  return mLfo.back()->getParam(Lfo::Param_t::freqInHz); }
+
+int Chorus::getNumVoices() const { return mVoicesParam; }
 
 Chorus::Shape Chorus::getShape() const {
   switch (mLfo.back()->getWaveform()) {

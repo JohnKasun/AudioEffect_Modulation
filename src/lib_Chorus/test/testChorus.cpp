@@ -16,7 +16,7 @@ class ChorusTestSuite : public ::testing::Test {
   virtual void SetUp() override {
     mSampleRate = float{44100};
     mNumSamples = int{10000};
-    mChorus.reset(new Chorus(mSampleRate, 20.0f, 3));
+    mChorus.reset(new Chorus(mSampleRate, 20.0f, 1.0f, 3));
     mInputBuffer.reset(new float[mNumSamples]{});
     mOutputBuffer.reset(new float[mNumSamples]{});
     mGroundBuffer.reset(new float[mNumSamples]{});

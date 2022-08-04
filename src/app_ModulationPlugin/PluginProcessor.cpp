@@ -78,7 +78,7 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     for (auto& chorus : mChorus) {
-        chorus.reset(new Chorus(sampleRate, 20.0f, 3));
+        chorus.reset(new Chorus(sampleRate, 20.0f, 1.0f, 3));
     }
 }
 
