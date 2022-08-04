@@ -4,6 +4,7 @@
 
 const float ModulationIf::MaxDepthInMs = 20.0f;
 const float ModulationIf::MaxSpeedInMs = 1.0f;
+const int ModulationIf::NumChorusVoices = 5;
 
 ModulationIf::ModulationIf() {
   mParamRanges[static_cast<int>(RangedParameter::Depth)][0] = 0;
@@ -25,7 +26,7 @@ Error_t ModulationIf::init(float sampleRate, Type type) {
   auto maxDepth = mParamRanges[static_cast<int>(RangedParameter::Depth)][1];
   switch (type) {
     case Type::Chorus:
-      mMod = new Chorus(sampleRate, maxDepth);
+      mMod = new Chorus(sampleRate, maxDepth, NumChorusVoices);
       mCurrentType = Type::Chorus;
       break;
     case Type::Flanger:
@@ -85,13 +86,15 @@ ModulationIf::Shape ModulationIf::getShape() const {
   return Shape();
 }
 
-float ModulationIf::getMaxDepth() {
+float ModulationIf::getMaxDepthInMs() {
   return MaxDepthInMs;
 }
 
-float ModulationIf::getMaxSpeed() {
+float ModulationIf::getMaxSpeedInMs() {
   return MaxSpeedInMs;
 }
+
+float ModulationIf::getNumChorusVoices() { return NumChorusVoices; }
 
 Error_t ModulationIf::process(const float const* inputBuffer, float* outputBuffer, const int numSamples) {
   if (!mIsInitialized)

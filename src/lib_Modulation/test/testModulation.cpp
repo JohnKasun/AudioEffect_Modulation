@@ -10,6 +10,7 @@
 #include "ModulationIf.h"
 #include "Synthesis.h"
 #include "Vector.h"
+#include "../src/lib_Modulation/include/ModulationBase.h"
 
 class ModulationTestSuite : public ::testing::Test {
  protected:
@@ -44,7 +45,7 @@ class FlangerTestSuite : public ModulationTestSuite {
 TEST_F(FlangerTestSuite, ZeroDepth) {
   mSpeedParam = 1;
   CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
-  auto delayInSamp = int{CUtil::float2int<int>(ModulationIf::getMaxDepth() * mSampleRate / 1000) / 2};
+  auto delayInSamp = int{CUtil::float2int<int>(ModulationIf::getMaxDepthInMs() * mSampleRate / 1000) / 2};
   CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
   CVectorFloat::add_I(mGroundBuffer.get() + delayInSamp, mInputBuffer.get(), mNumSamples - delayInSamp);
   CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
@@ -59,6 +60,28 @@ TEST_F(FlangerTestSuite, ZeroSpeed) {
   CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
   CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
   CVectorFloat::add_I(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
+  mMod->setDepth(mDepthParam);
+  mMod->setSpeed(mSpeedParam);
+  mMod->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+  GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
+}
+
+class ChorusTestSuite : public ModulationTestSuite {
+ protected:
+  void SetUp() override { mMod->init(mSampleRate, ModulationIf::Type::Chorus); }
+
+ private:
+
+};
+
+TEST_F(ChorusTestSuite, ZeroDepth) {
+  mDepthParam = 0;
+  mSpeedParam = 1;
+  CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
+  auto delayInSamp = int{CUtil::float2int<int>((ModulationIf::getMaxDepthInMs() + Chorus::getDelayInMs()) * mSampleRate / 1000) / 2};
+  CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+  CVectorFloat::add_I(mGroundBuffer.get() + delayInSamp, mInputBuffer.get(), mNumSamples - delayInSamp);
   CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
   mMod->setDepth(mDepthParam);
   mMod->setSpeed(mSpeedParam);

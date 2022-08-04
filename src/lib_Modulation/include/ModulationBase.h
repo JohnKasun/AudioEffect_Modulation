@@ -34,6 +34,8 @@ class Chorus : public ModulationBase {
 
   virtual void process(const float const* inputBuffer, float* outputBuffer, const int numSamples) override;
 
+  static float getDelayInMs() { return DelayInMs; };
+
  protected:
   std::unique_ptr<CRingBuffer<float>> mDelayLine;
 

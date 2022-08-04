@@ -21,8 +21,9 @@ class ModulationIf {
   float getSpeed() const;
   Shape getShape() const;
 
-  static float getMaxDepth();
-  static float getMaxSpeed();
+  static float getMaxDepthInMs();
+  static float getNumChorusVoices();
+  static float getMaxSpeedInMs();
 
   Error_t process(const float const* inputBuffer, float* outputBuffer, const int numSamples);
 
@@ -43,4 +44,5 @@ class ModulationIf {
 
   static const float MaxDepthInMs;
   static const float MaxSpeedInMs;
+  static const int NumChorusVoices;
 };
