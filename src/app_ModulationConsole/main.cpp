@@ -9,7 +9,7 @@
 #include "AudioFileIf.h"
 #include "ErrorDef.h"
 #include "Exception.h"
-#include "ModulationIf.h"
+#include "Chorus.h"
 
 using std::cout;
 using std::endl;
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
   float** inputAudioData = nullptr;
   float** outputAudioData = nullptr;
-  std::vector<unique_ptr<ModulationIf>> modulation;
+  std::vector<unique_ptr<Chorus>> chorus;
 
   string inputFilePath{};
   string outputFilePath{};
@@ -59,23 +59,10 @@ int main(int argc, char* argv[]) {
 
     // Create and initialize instance
     for (int c = 0; c < fileSpec.iNumChannels; c++) {
-      modulation.emplace_back(new ModulationIf());
-      if (modulation[c]->init(fileSpec.fSampleRateInHz, ModulationIf::Type::Chorus) != Error_t::kNoError) {
-        throw Exception("Invalid Sample rate...");
-      }
-    }
-
-    // Set Parameters
-    for (int c = 0; c < fileSpec.iNumChannels; c++) {
-      if (modulation[c]->setDepth(10) != Error_t::kNoError) {
-        throw Exception("Invalid Depth Parameter...");
-      }
-      if (modulation[c]->setSpeed(0.5) != Error_t::kNoError) {
-        throw Exception("Invalid Speed Parameter...");
-      }
-      if (modulation[c]->setShape(ModulationIf::Shape::Sine) != Error_t::kNoError) {
-        throw Exception("Invalid Shape Parameter...");
-      }
+      chorus.emplace_back(new Chorus(fileSpec.fSampleRateInHz, 20.0f, 7));
+      chorus.back()->setDepth(10);
+      chorus.back()->setSpeed(0.5);
+      chorus.back()->setShape(Chorus::Shape::Sine);
     }
 
     // Allocate memory
@@ -92,9 +79,7 @@ int main(int argc, char* argv[]) {
       if (audioFileIn->readData(inputAudioData, iNumFrames) != Error_t::kNoError)
         throw Exception("Data reading error...");
       for (int c = 0; c < fileSpec.iNumChannels; c++) {
-        if (modulation[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames) != Error_t::kNoError) {
-          throw Exception("Processing error...");
-        }
+        chorus[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames);
       }
       if (audioFileOut->writeData(outputAudioData, iNumFrames) != Error_t::kNoError)
         throw Exception("Data writing error...");
@@ -110,7 +95,7 @@ int main(int argc, char* argv[]) {
 
     CAudioFileIf::destroy(audioFileIn);
     CAudioFileIf::destroy(audioFileOut);
-    modulation.clear();
+    chorus.clear();
 
     cout << endl;
     cout << std::setw(entryLabelWidth) << "Done processing..." << endl;

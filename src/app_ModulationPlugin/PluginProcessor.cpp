@@ -77,15 +77,15 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 //==============================================================================
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    for (auto& mod : mModulation) {
-        mod.init(sampleRate, ModulationIf::Type::Chorus);
+    for (auto& chorus : mChorus) {
+        chorus.reset(new Chorus(sampleRate, 20.0f, 3));
     }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
 {
-    for (auto& mod : mModulation) {
-        mod.reset();
+    for (auto& chorus : mChorus) {
+        chorus.reset();
     }
 }
 
@@ -108,15 +108,15 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     juce::ScopedNoDenormals noDenormals;
 
-    for (auto& mod : mModulation) {
-        mod.setDepth(*mDepthParam);
-        mod.setSpeed(*mSpeedParam);
+    for (auto& chorus : mChorus) {
+      chorus->setDepth(*mDepthParam);
+      chorus->setSpeed(*mSpeedParam);
     }
     
     auto inputBuffer = getBusBuffer(buffer, true, 0);
     auto outputBuffer = getBusBuffer(buffer, false, 0);
     for (auto c = 0; c < inputBuffer.getNumChannels(); c++) {
-        mModulation[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
+        mChorus[c]->process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
     }
     for (auto c = inputBuffer.getNumChannels(); c < outputBuffer.getNumChannels(); c++) {
         buffer.copyFrom(c, 0, buffer.getReadPointer(0), buffer.getNumSamples());

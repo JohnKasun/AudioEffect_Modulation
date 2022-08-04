@@ -3,7 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <array>
 
-#include "ModulationIf.h"
+#include "Chorus.h"
 #include "ErrorDef.h"
 
 
@@ -54,7 +54,7 @@ private:
     std::atomic<float>* mDepthParam = nullptr;
     std::atomic<float>* mSpeedParam = nullptr;
 
-    std::array<ModulationIf, 2> mModulation;
+    std::array<std::unique_ptr<Chorus>, 2> mChorus;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)
 };

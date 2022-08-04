@@ -1,23 +1,34 @@
-#include "ModulationBase.h"
+#include "Chorus.h"
 
-ModulationBase::ModulationBase(float sampleRate, int numLfos) {
-  assert(numLfos > 0);
+Chorus::Chorus(float sampleRate, float maxDepthInMs, int maxNumVoices) {
+  if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");
+  if (maxDepthInMs < 0.0f) throw Exception("Invalid Maximum Depth");
+  if (maxDepthInMs < 0) throw Exception("Invalid Number of Voices");
+
   mSampleRate = sampleRate;
-  auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / numLfos};
+  auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / maxNumVoices};
   auto phaseAccum = float{static_cast<float>(M_PI / 2.0f)};
-  for (auto i = 0; i < numLfos; i++) {
+  for (auto i = 0; i < maxNumVoices; i++) {
     mLfo.emplace_back(new Lfo(mSampleRate));
     mLfo.back()->setParam(Lfo::Param_t::phaseInRadians, phaseAccum);
     phaseAccum += phaseIncrement;
   }
+
+  auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * 20.0f / 1000.0f)};
+  auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f)};
+  assert(maxDepthInSamp <= delayInSamp);
+  mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
+  mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
 }
 
-ModulationBase::~ModulationBase() {
+Chorus::~Chorus() {
   mLfo.clear();
   mSampleRate = 1.0f;
 }
 
-void ModulationBase::setDepth(float newDepthInMs) {
+void Chorus::setDepth(float newDepthInMs) {
+  if (newDepthInMs < 0.0f) throw Exception("Invalid Depth Parameter");
+
   auto newDepthInSamp = float{newDepthInMs * mSampleRate / 1000.0f};
   auto newAmplitude = float{newDepthInSamp / 2.0f};
   for (auto& lfo : mLfo) {
@@ -25,16 +36,18 @@ void ModulationBase::setDepth(float newDepthInMs) {
   }
 }
 
-void ModulationBase::setSpeed(float newSpeedInHz) {
+void Chorus::setSpeed(float newSpeedInHz) {
+  if (newSpeedInHz < 0.0f) throw Exception("Invalid Speed Parameter");
+
   for (auto& lfo : mLfo) {
     lfo->setParam(Lfo::Param_t::freqInHz, newSpeedInHz);
   }
 }
 
-void ModulationBase::setShape(ModulationIf::Shape newShape) {
+void Chorus::setShape(Chorus::Shape newShape) {
   Lfo::Waveform_t newLfoWaveform;
   switch (newShape) {
-    case ModulationIf::Shape::Sine:
+    case Chorus::Shape::Sine:
       newLfoWaveform = Lfo::Waveform_t::Sine;
       break;
     default:
@@ -45,34 +58,28 @@ void ModulationBase::setShape(ModulationIf::Shape newShape) {
   }
 }
 
-float ModulationBase::getDepth() const {
+float Chorus::getDepth() const {
   return mLfo.back()->getParam(Lfo::Param_t::amplitude) * 2.0f / mSampleRate * 1000.0f;
 }
 
-float ModulationBase::getSpeed() const {
+float Chorus::getSpeed() const {
   return mLfo.back()->getParam(Lfo::Param_t::freqInHz);
 }
 
-ModulationIf::Shape ModulationBase::getShape() const {
+Chorus::Shape Chorus::getShape() const {
   switch (mLfo.back()->getWaveform()) {
     case Lfo::Waveform_t::Sine:
-      return ModulationIf::Shape::Sine;
+      return Chorus::Shape::Sine;
     default:
-      return ModulationIf::Shape::Triangle;
+      return Chorus::Shape::Triangle;
   }
 }
 
-const float Chorus::DelayInMs = 20.0f;
-
-Chorus::Chorus(float sampleRate, float maxDepthInMs, int numVoices) : ModulationBase(sampleRate, numVoices) {
-  auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * DelayInMs / 1000.0f)};
-  auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f)};
-  assert(maxDepthInSamp <= delayInSamp);
-  mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
-  mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
-}
-
 void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples) {
+  if (!inputBuffer) throw Exception("Input Buffer is NULL");
+  if (!outputBuffer) throw Exception("Output Buffer is NULL");
+  if (numSamples < 0) throw Exception("Invalid Buffer Length");
+
   for (int i = 0; i < numSamples; i++) {
     mDelayLine->putPostInc(inputBuffer[i]);
     auto delaySum = float{0.0f};
@@ -83,8 +90,4 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
     outputBuffer[i] = (inputBuffer[i] + delaySum) / (mLfo.size() + 1);
     mDelayLine->getPostInc();
   }
-}
-
-Flanger::Flanger(float sampleRate, float maxDepthInMs) : Chorus(sampleRate, maxDepthInMs, 1) {
-  mDelayLine->setWriteIdx(CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f) / 2);
 }

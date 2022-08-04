@@ -7,5 +7,5 @@ target_link_libraries(${APP}
                 lib_AudioFileIO
                 lib_Lfo
                 lib_RingBuffer
-                lib_Modulation
+                lib_Chorus
 )
