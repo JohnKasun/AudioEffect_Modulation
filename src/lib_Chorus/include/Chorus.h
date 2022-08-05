@@ -11,7 +11,7 @@ class Chorus {
  public:
   enum class Shape { Sine, Triangle };
   Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int maxNumVoices);
-  ~Chorus();
+  ~Chorus() = default;
 
   void setDepth(float newDepthInMs);
   void setSpeed(float newSpeedInHz);
@@ -33,4 +33,8 @@ class Chorus {
   int mVoicesParam = 1.0f;
   std::vector<std::unique_ptr<Lfo>> mLfo;
   std::unique_ptr<CRingBuffer<float>> mDelayLine;
+
+  float processLfos();
+
+  static const float DelayInMs;
 };

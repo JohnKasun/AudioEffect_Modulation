@@ -1,5 +1,7 @@
 #include "Chorus.h"
 
+const float Chorus::DelayInMs = 20.0f;
+
 Chorus::Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int maxNumVoices) {
   if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");
   if (maxDepthInMs < 0.0f) throw Exception("Invalid Maximum Depth");
@@ -19,14 +21,12 @@ Chorus::Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int max
     phaseAccum += phaseIncrement;
   }
 
-  auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * 20.0f / 1000.0f)};
+  auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * DelayInMs / 1000.0f)};
   auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f)};
   assert(maxDepthInSamp <= delayInSamp);
   mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
   mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
 }
-
-Chorus::~Chorus() {}
 
 void Chorus::setDepth(float newDepthInMs) {
   if (newDepthInMs < 0.0f || newDepthInMs > mMaxDepthInMs) throw Exception("Invalid Depth Parameter");
@@ -91,15 +91,20 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
 
   for (int i = 0; i < numSamples; i++) {
     mDelayLine->putPostInc(inputBuffer[i]);
-    auto delaySum = float{0.0f};
-    for (auto i = 0; i < mVoicesParam; i++) {
-      auto offset = mLfo[i]->process();
-      delaySum += mDelayLine->get(offset);
-    }
-    for (auto i = mVoicesParam; i < mLfo.size(); i++) {
-      mLfo[i]->process(); // Dummy call to keep lfos in sync
-    }
-    outputBuffer[i] = (inputBuffer[i] + delaySum) / (mLfo.size() + 1);
+    auto lfoSum = processLfos();
+    outputBuffer[i] = (inputBuffer[i] + lfoSum) / (mVoicesParam + 1);
     mDelayLine->getPostInc();
   }
+}
+
+float Chorus::processLfos() {
+  auto lfoSum = 0.0f;
+  for (auto i = 0; i < mVoicesParam; i++) {
+    auto offset = mLfo[i]->process();
+    lfoSum += mDelayLine->get(offset);
+  }
+  for (auto i = mVoicesParam; i < mLfo.size(); i++) {
+    mLfo[i]->process();  // Dummy call to keep lfos in sync
+  }
+  return lfoSum;
 }

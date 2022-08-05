@@ -61,7 +61,8 @@ int main(int argc, char* argv[]) {
     for (int c = 0; c < fileSpec.iNumChannels; c++) {
       chorus.emplace_back(new Chorus(fileSpec.fSampleRateInHz, 20.0f, 1.0, 7));
       chorus.back()->setDepth(10);
-      chorus.back()->setSpeed(0.5);
+      chorus.back()->setSpeed(0.25);
+      chorus.back()->setNumVoices(7);
       chorus.back()->setShape(Chorus::Shape::Sine);
     }
 
