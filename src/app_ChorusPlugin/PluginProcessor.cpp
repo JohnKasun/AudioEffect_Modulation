@@ -4,17 +4,19 @@
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     : AudioProcessor(BusesProperties()
-        .withInput("Input", juce::AudioChannelSet::stereo(), true)
-        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
-    ),
-    mParameters(*this, nullptr, juce::Identifier("Parameters"),
-        {
-            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 50.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f)
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+      mParameters(*this, nullptr, juce::Identifier("Parameters"), {
+        std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 20.0f, 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, 1.0f, 0.0f),
+            std::make_unique<juce::AudioParameterInt>("voices", "Number Of Voices", 0.0, 7.0, 3),
+                   std::make_unique<juce::AudioParameterChoice>("waveform", "Waveform", juce::StringArray{"Sine", "Triangle"}, 0)
         })
 {
     mDepthParam = mParameters.getRawParameterValue("depth");
     mSpeedParam = mParameters.getRawParameterValue("speed");
+    mVoicesParam = mParameters.getRawParameterValue("voices");
+    mWaveformParam = mParameters.getRawParameterValue("waveform");
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -78,7 +80,10 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     for (auto& chorus : mChorus) {
-        chorus.reset(new Chorus(sampleRate, 20.0f, 1.0f, 3));
+        chorus.reset(new Chorus(sampleRate, 
+            mParameters.getParameterRange("depth").end, 
+            mParameters.getParameterRange("speed").end,
+            mParameters.getParameterRange("voices").end));
     }
 }
 
@@ -111,6 +116,16 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     for (auto& chorus : mChorus) {
       chorus->setDepth(*mDepthParam);
       chorus->setSpeed(*mSpeedParam);
+      chorus->setNumVoices(static_cast<int>(*mVoicesParam));
+      Chorus::Shape waveform;
+      switch (static_cast<int>(*mWaveformParam)) { 
+      case 0:
+        waveform = Chorus::Shape::Sine;
+        break;
+      default:
+        waveform = Chorus::Shape::Triangle;
+      }
+      chorus->setShape(waveform);
     }
     
     auto inputBuffer = getBusBuffer(buffer, true, 0);

@@ -36,5 +36,11 @@ private:
     juce::Slider mSpeedSlider;
     std::unique_ptr<SliderAttachment> mSpeedSliderAttachment;
 
+    juce::Slider mVoicesSlider;
+    std::unique_ptr<SliderAttachment> mVoicesSliderAttachment;
+
+    juce::Slider mWaveformSlider;
+    std::unique_ptr<SliderAttachment> mWaveformSliderAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

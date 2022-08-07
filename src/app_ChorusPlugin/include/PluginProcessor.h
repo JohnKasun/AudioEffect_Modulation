@@ -52,7 +52,9 @@ private:
     juce::AudioProcessorValueTreeState mParameters;
 
     std::atomic<float>* mDepthParam = nullptr;
-    std::atomic<float>* mSpeedParam = nullptr;
+    std::atomic<float>* mSpeedParam = nullptr;    
+    std::atomic<float>* mVoicesParam = nullptr;
+    std::atomic<float>* mWaveformParam = nullptr;
 
     std::array<std::unique_ptr<Chorus>, 2> mChorus;
     //==============================================================================
