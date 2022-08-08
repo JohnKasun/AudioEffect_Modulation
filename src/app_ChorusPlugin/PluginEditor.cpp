@@ -35,7 +35,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mWaveformSlider.setLookAndFeel(&mMyLookAndFeel);
     mWaveformSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
 
-    setSize(paramControlWidth * 2, (paramControlHeight + paramLabelHeight) * 2);
+    addAndMakeVisible(mGainSlider);
+    mGainSliderAttachment.reset(new SliderAttachment(mValueTreeState, "gain", mGainSlider));
+    mGainSlider.setName("Gain");
+    mGainSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    mGainSlider.setLookAndFeel(&mMyLookAndFeel);
+    mGainSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, true, paramLinearSliderLabelWidth, paramLabelHeight);
+
+    addAndMakeVisible(mMixSlider);
+    mMixSliderAttachment.reset(new SliderAttachment(mValueTreeState, "mix", mMixSlider));
+    mMixSlider.setName("Mix");
+    mMixSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    mMixSlider.setLookAndFeel(&mMyLookAndFeel);
+    mMixSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, true, paramLinearSliderLabelWidth, paramLabelHeight);
+
+    setSize(paramControlWidth * 2, (paramControlHeight + paramLabelHeight + paramLinearSliderHeight) * 2);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -51,6 +65,7 @@ void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g)
 void AudioPluginAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds();
+    auto footer = area.removeFromBottom(paramLinearSliderHeight * 2);
     auto leftArea = area.removeFromLeft(paramControlWidth);
     auto topLeftArea = leftArea.removeFromTop(paramControlHeight + paramLabelHeight);
     auto topRightArea = area.removeFromTop(paramControlHeight + paramLabelHeight);
@@ -59,4 +74,6 @@ void AudioPluginAudioProcessorEditor::resized()
     mSpeedSlider.setBounds(topRightArea);
     mVoicesSlider.setBounds(leftArea);
     mWaveformSlider.setBounds(area);
+    mGainSlider.setBounds(footer.removeFromTop(paramLinearSliderHeight));
+    mMixSlider.setBounds(footer);
 }

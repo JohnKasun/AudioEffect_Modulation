@@ -55,6 +55,8 @@ private:
     std::atomic<float>* mSpeedParam = nullptr;    
     std::atomic<float>* mVoicesParam = nullptr;
     std::atomic<float>* mWaveformParam = nullptr;
+    std::atomic<float>* mGainParam = nullptr;
+    std::atomic<float>* mMixParam = nullptr;
 
     std::array<std::unique_ptr<Chorus>, 2> mChorus;
     //==============================================================================

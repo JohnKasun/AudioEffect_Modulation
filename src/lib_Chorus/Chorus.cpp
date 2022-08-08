@@ -1,35 +1,31 @@
 #include "Chorus.h"
 
 const float Chorus::DelayInMs = 20.0f;
+const float Chorus::MaxDepthInMs = 20.0f;
+const float Chorus::MaxSpeedInHz = 1.0f;
+const int Chorus::MaxNumVoices = 5;
 
-Chorus::Chorus(float sampleRate, float maxDepthInMs, float maxSpeedInHz, int maxNumVoices) {
+Chorus::Chorus(float sampleRate) {
   if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");
-  if (maxDepthInMs < 0.0f) throw Exception("Invalid Maximum Depth");
-  if (maxSpeedInHz < 0.0f) throw Exception("Invalid Maximum Speed");
-  if (maxNumVoices < 0) throw Exception("Invalid Number of Voices");
-
   mSampleRate = sampleRate;
-  mMaxDepthInMs = maxDepthInMs;
-  mMaxSpeedInHz = maxSpeedInHz;
-  mMaxNumVoices = maxNumVoices;
 
-  auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / maxNumVoices};
+  auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / MaxNumVoices};
   auto phaseAccum = float{static_cast<float>(M_PI / 2.0f)};
-  for (auto i = 0; i < maxNumVoices; i++) {
+  for (auto i = 0; i < MaxNumVoices; i++) {
     mLfo.emplace_back(new Lfo(mSampleRate));
     mLfo.back()->setParam(Lfo::Param_t::phaseInRadians, phaseAccum);
     phaseAccum += phaseIncrement;
   }
 
   auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * DelayInMs / 1000.0f)};
-  auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * maxDepthInMs / 1000.0f)};
+  auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * MaxDepthInMs / 1000.0f)};
   assert(maxDepthInSamp <= delayInSamp);
   mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
   mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
 }
 
 void Chorus::setDepth(float newDepthInMs) {
-  if (newDepthInMs < 0.0f || newDepthInMs > mMaxDepthInMs) throw Exception("Invalid Depth Parameter");
+  if (newDepthInMs < 0.0f || newDepthInMs > MaxDepthInMs) throw Exception("Invalid Depth Parameter");
 
   auto newDepthInSamp = float{newDepthInMs * mSampleRate / 1000.0f};
   auto newAmplitude = float{newDepthInSamp / 2.0f};
@@ -39,7 +35,7 @@ void Chorus::setDepth(float newDepthInMs) {
 }
 
 void Chorus::setSpeed(float newSpeedInHz) {
-  if (newSpeedInHz < 0.0f || newSpeedInHz > mMaxSpeedInHz) throw Exception("Invalid Speed Parameter");
+  if (newSpeedInHz < 0.0f || newSpeedInHz > MaxSpeedInHz) throw Exception("Invalid Speed Parameter");
 
   for (auto& lfo : mLfo) {
     lfo->setParam(Lfo::Param_t::freqInHz, newSpeedInHz);
@@ -47,7 +43,7 @@ void Chorus::setSpeed(float newSpeedInHz) {
 }
 
 void Chorus::setNumVoices(int newNumVoices) {
-  if (newNumVoices < 0 || newNumVoices > mMaxNumVoices) throw Exception("Invalid Number Of Voices");
+  if (newNumVoices < 0 || newNumVoices > MaxNumVoices) throw Exception("Invalid Number Of Voices");
 
   mVoicesParam = newNumVoices;
 }
@@ -64,6 +60,18 @@ void Chorus::setShape(Chorus::Shape newShape) {
   for (auto& lfo : mLfo) {
     lfo->setWaveform(newLfoWaveform);
   }
+}
+
+void Chorus::setGain(float newGain) {
+  if (newGain < 0.0f || newGain > 2.0f) throw Exception("Invalid Gain Parameter");
+
+  mGainParam = newGain;
+}
+
+void Chorus::setMix(float newMix) {
+  if (newMix < 0.0f || newMix > 1.0f) throw Exception("Invalid Mix Parameter");
+
+  mMixParam = newMix;
 }
 
 float Chorus::getDepth() const {
@@ -84,6 +92,10 @@ Chorus::Shape Chorus::getShape() const {
   }
 }
 
+float Chorus::getGain() const { return mGainParam; }
+
+float Chorus::getMix() const { return mMixParam; }
+
 void Chorus::process(const float const* inputBuffer, float* outputBuffer, const int numSamples) {
   if (!inputBuffer) throw Exception("Input Buffer is NULL");
   if (!outputBuffer) throw Exception("Output Buffer is NULL");
@@ -92,7 +104,8 @@ void Chorus::process(const float const* inputBuffer, float* outputBuffer, const 
   for (int i = 0; i < numSamples; i++) {
     mDelayLine->putPostInc(inputBuffer[i]);
     auto lfoSum = processLfos();
-    outputBuffer[i] = (inputBuffer[i] + lfoSum) / (mVoicesParam + 1);
+    auto out = (1.0f - mMixParam) * inputBuffer[i] + mMixParam * lfoSum;
+    outputBuffer[i] = mGainParam * out;
     mDelayLine->getPostInc();
   }
 }

@@ -11,6 +11,11 @@ public:
     enum Dimen_t {
         paramControlWidth = 250,
         paramControlHeight = 250,
+
+        paramLinearSliderWidth = 450,
+        paramLinearSliderHeight = 50,
+        paramLinearSliderLabelWidth = 50,
+
         paramLabelHeight = 50
     };
 
@@ -40,7 +45,14 @@ private:
     std::unique_ptr<SliderAttachment> mVoicesSliderAttachment;
 
     juce::Slider mWaveformSlider;
-    std::unique_ptr<SliderAttachment> mWaveformSliderAttachment;
+    std::unique_ptr<SliderAttachment> mWaveformSliderAttachment;    
+    
+    juce::Slider mGainSlider;
+    std::unique_ptr<SliderAttachment> mGainSliderAttachment;
+
+    juce::Slider mMixSlider;
+    std::unique_ptr<SliderAttachment> mMixSliderAttachment;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };
