@@ -11,7 +11,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
             std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, Chorus::MaxSpeedInHz, 0.25f),
             std::make_unique<juce::AudioParameterInt>("voices", "Number Of Voices", 1, Chorus::MaxNumVoices, 3),
             std::make_unique<juce::AudioParameterChoice>("waveform", "Waveform", juce::StringArray{"Sine", "Triangle"}, 0),
-            std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 2.0f, 1.0f),
+            std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 5.0f, 1.0f),
             std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 0.5f)
         })
 {

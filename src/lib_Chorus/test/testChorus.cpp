@@ -22,11 +22,19 @@ class ChorusTestSuite : public ::testing::Test {
     mGroundBuffer.reset(new float[mNumSamples]{});
     mDepthParam = float{0};
     mSpeedParam = float{0};
+    mShapeParam = Chorus::Shape::Sine;
+    mVoicesParam = int{1};
+    mGainParam = float{1};
+    mMixParam = float{0.5};
   }
   float mSampleRate;
   int mNumSamples;
   float mDepthParam;
   float mSpeedParam;
+  Chorus::Shape mShapeParam;
+  int mVoicesParam;
+  float mGainParam;
+  float mMixParam;
   std::unique_ptr<Chorus> mChorus;
   std::unique_ptr<float[]> mInputBuffer;
   std::unique_ptr<float[]> mOutputBuffer;
@@ -35,13 +43,21 @@ class ChorusTestSuite : public ::testing::Test {
 TEST_F(ChorusTestSuite, ZeroDepth) {
   mSpeedParam = 1;
   CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
-  auto delayInSamp = int{CUtil::float2int<int>(20.0f * mSampleRate / 1000) / 2};
+  auto delayInSamp = int{CUtil::float2int<int>((Chorus::DelayInMs / 2.0f + Chorus::MaxDepthInMs) * mSampleRate / 1000)};
   CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
   CVectorFloat::add_I(mGroundBuffer.get() + delayInSamp, mInputBuffer.get(), mNumSamples - delayInSamp);
-  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
-  mChorus->setDepth(mDepthParam);
-  mChorus->setSpeed(mSpeedParam);
-  mChorus->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5, mNumSamples);
+  try {
+    mChorus->setDepth(mDepthParam);
+    mChorus->setSpeed(mSpeedParam);
+    mChorus->setShape(mShapeParam);
+    mChorus->setNumVoices(mVoicesParam);
+    mChorus->setGain(mGainParam);
+    mChorus->setMix(mMixParam);
+    mChorus->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+  } catch (Exception& ex) {
+    FAIL();
+  }
   GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
 }
 
@@ -50,9 +66,13 @@ TEST_F(ChorusTestSuite, ZeroSpeed) {
   CSynthesis::generateSine(mInputBuffer.get(), 440, mSampleRate, mNumSamples);
   CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
   CVectorFloat::add_I(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
-  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
+  CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5, mNumSamples);
   mChorus->setDepth(mDepthParam);
   mChorus->setSpeed(mSpeedParam);
+  mChorus->setShape(mShapeParam);
+  mChorus->setNumVoices(mVoicesParam);
+  mChorus->setGain(mGainParam);
+  mChorus->setMix(mMixParam);
   mChorus->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
   GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples);
 }

@@ -32,6 +32,7 @@ class Chorus {
   static const float MaxDepthInMs;
   static const float MaxSpeedInHz;
   static const int MaxNumVoices;
+  static const float DelayInMs;
  protected:
   float mSampleRate;
 
@@ -42,6 +43,4 @@ class Chorus {
   std::unique_ptr<CRingBuffer<float>> mDelayLine;
 
   float processLfos();
-
-  static const float DelayInMs;
 };

@@ -63,7 +63,7 @@ void Chorus::setShape(Chorus::Shape newShape) {
 }
 
 void Chorus::setGain(float newGain) {
-  if (newGain < 0.0f || newGain > 2.0f) throw Exception("Invalid Gain Parameter");
+  if (newGain < 0.0f || newGain > 5.0f) throw Exception("Invalid Gain Parameter");
 
   mGainParam = newGain;
 }
