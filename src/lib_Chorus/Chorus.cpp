@@ -10,7 +10,7 @@ Chorus::Chorus(float sampleRate) {
   mSampleRate = sampleRate;
 
   auto phaseIncrement = float{2.0f * static_cast<float>(M_PI) / MaxNumVoices};
-  auto phaseAccum = float{static_cast<float>(M_PI / 2.0f)};
+  auto phaseAccum = 0.0f;
   for (auto i = 0; i < MaxNumVoices; i++) {
     mLfo.emplace_back(new Lfo(mSampleRate));
     mLfo.back()->setParam(Lfo::Param_t::phaseInRadians, phaseAccum);
@@ -19,7 +19,6 @@ Chorus::Chorus(float sampleRate) {
 
   auto delayInSamp = int{CUtil::float2int<int>(mSampleRate * DelayInMs / 1000.0f)};
   auto maxDepthInSamp = int{CUtil::float2int<int>(mSampleRate * MaxDepthInMs / 1000.0f)};
-  assert(maxDepthInSamp <= delayInSamp);
   mDelayLine.reset(new CRingBuffer<float>(1 + delayInSamp + maxDepthInSamp));
   mDelayLine->setWriteIdx(delayInSamp + maxDepthInSamp / 2);
 }
