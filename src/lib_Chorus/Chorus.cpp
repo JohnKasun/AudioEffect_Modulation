@@ -3,7 +3,7 @@
 const float Chorus::DelayInMs = 20.0f;
 const float Chorus::MaxDepthInMs = 20.0f;
 const float Chorus::MaxSpeedInHz = 1.0f;
-const int Chorus::MaxNumVoices = 5;
+const int Chorus::MaxNumVoices = 4;
 
 Chorus::Chorus(float sampleRate) {
   if (sampleRate <= 0.0f) throw Exception("Invalid Samplerate");

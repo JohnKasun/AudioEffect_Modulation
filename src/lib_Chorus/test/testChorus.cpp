@@ -94,7 +94,36 @@ TEST_F(ChorusTestSuite, Gain) {
 }
 
 TEST_F(ChorusTestSuite, MultiVoices) {
-
+  auto freq = 440.0f;
+  auto depth = 20.0f;
+  for (auto voices = 1; voices <= Chorus::MaxNumVoices; voices++) {
+    SetUp();
+    mSampleRate = 44000.0f;
+    mChorus.reset(new Chorus(mSampleRate));
+    CSynthesis::generateSine(mInputBuffer.get(), freq, mSampleRate, mNumSamples);
+    auto delayInSamp = int{CUtil::float2int<int>((Chorus::DelayInMs + Chorus::MaxDepthInMs / 2.0f) * mSampleRate / 1000)};
+    CVectorFloat::copy(mGroundBuffer.get(), mInputBuffer.get(), mNumSamples);
+    for (auto i = 0; i < voices; i++) {
+      auto voiceDelay = static_cast<int>(depth / 2 * sinf(2.0f * M_PI * i / Chorus::MaxNumVoices) * mSampleRate / 1000.0f);
+      assert(voiceDelay <= mNumSamples);
+      CVectorFloat::add_I(mGroundBuffer.get() + delayInSamp, mInputBuffer.get() + voiceDelay,
+                          mNumSamples - std::max<int>(delayInSamp, voiceDelay));
+    }
+    CVectorFloat::mulC_I(mGroundBuffer.get(), 0.5f, mNumSamples);
+    try {
+      mChorus->setDepth(20);
+      mChorus->setSpeed(0);
+      mChorus->setShape(Chorus::Shape::Sine);
+      mChorus->setNumVoices(voices);
+      mChorus->setGain(1.0f);
+      mChorus->setMix(0.5);
+      mChorus->process(mInputBuffer.get(), mOutputBuffer.get(), mNumSamples);
+    } catch (Exception& ex) {
+      FAIL();
+    }
+    auto endBuffer = depth / 2 * mSampleRate / 1000.0f;
+    GTestUtil::compare(mOutputBuffer.get(), mGroundBuffer.get(), mNumSamples - endBuffer);
+  }
 }
 
 TEST_F(ChorusTestSuite, Mix) {
