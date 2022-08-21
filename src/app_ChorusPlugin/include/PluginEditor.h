@@ -20,6 +20,7 @@ public:
     };
 
     typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+    typedef juce::AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
 
     explicit AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor&, juce::AudioProcessorValueTreeState&);
     ~AudioPluginAudioProcessorEditor() override;
@@ -44,8 +45,8 @@ private:
     juce::Slider mVoicesSlider;
     std::unique_ptr<SliderAttachment> mVoicesSliderAttachment;
 
-    juce::Slider mWaveformSlider;
-    std::unique_ptr<SliderAttachment> mWaveformSliderAttachment;    
+    juce::ComboBox mWaveformSelector;
+    std::unique_ptr<ComboBoxAttachment> mWaveformSelectorAttachment;    
     
     juce::Slider mGainSlider;
     std::unique_ptr<SliderAttachment> mGainSliderAttachment;

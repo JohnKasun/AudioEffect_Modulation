@@ -28,12 +28,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mVoicesSlider.setLookAndFeel(&mMyLookAndFeel);
     mVoicesSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
 
-    addAndMakeVisible(mWaveformSlider);
-    mWaveformSliderAttachment.reset(new SliderAttachment(mValueTreeState, "waveform", mWaveformSlider));
-    mWaveformSlider.setName("Waveform");
-    mWaveformSlider.setSliderStyle(juce::Slider::Rotary);
-    mWaveformSlider.setLookAndFeel(&mMyLookAndFeel);
-    mWaveformSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+    addAndMakeVisible(mWaveformSelector);
+    mWaveformSelector.addItemList({"Sine", "Triangle"}, 0);
+    mWaveformSelectorAttachment.reset(new ComboBoxAttachment(mValueTreeState, "waveform", mWaveformSelector));
+    mWaveformSelector.setLookAndFeel(&mMyLookAndFeel);
+    mWaveformSelector.setSelectedItemIndex(1, juce::sendNotification);
 
     addAndMakeVisible(mGainSlider);
     mGainSliderAttachment.reset(new SliderAttachment(mValueTreeState, "gain", mGainSlider));
@@ -73,7 +72,7 @@ void AudioPluginAudioProcessorEditor::resized()
     mDepthSlider.setBounds(topLeftArea);
     mSpeedSlider.setBounds(topRightArea);
     mVoicesSlider.setBounds(leftArea);
-    mWaveformSlider.setBounds(area);
+    mWaveformSelector.setBounds(area);
     mGainSlider.setBounds(footer.removeFromTop(paramLinearSliderHeight));
     mMixSlider.setBounds(footer);
 }

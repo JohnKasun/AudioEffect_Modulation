@@ -10,7 +10,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
         std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, Chorus::MaxDepthInMs, 10.0f),
             std::make_unique<juce::AudioParameterFloat>("speed", "Speed", 0.0f, Chorus::MaxSpeedInHz, 0.25f),
             std::make_unique<juce::AudioParameterInt>("voices", "Number Of Voices", 1, Chorus::MaxNumVoices, 3),
-            std::make_unique<juce::AudioParameterChoice>("waveform", "Waveform", juce::StringArray{"Sine", "Triangle"}, 0),
+            std::make_unique<juce::AudioParameterChoice>("waveform", "Waveform", juce::StringArray{"Sine", "Triangle"}, 1),
             std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 5.0f, 1.0f),
             std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 0.5f)
         })
@@ -119,8 +119,9 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       chorus->setSpeed(*mSpeedParam);
       chorus->setNumVoices(static_cast<int>(*mVoicesParam));
       Chorus::Shape waveform;
-      switch (static_cast<int>(*mWaveformParam)) { 
+      switch (static_cast<int>(*mWaveformParam)) {
       case 0:
+      case 1:
         waveform = Chorus::Shape::Sine;
         break;
       default:
