@@ -52,6 +52,7 @@ private:
     juce::Slider mGainSlider;
     std::unique_ptr<SliderAttachment> mGainSliderAttachment;
 
+    juce::Label mMixLabel;
     juce::Slider mMixSlider;
     std::unique_ptr<SliderAttachment> mMixSliderAttachment;
 

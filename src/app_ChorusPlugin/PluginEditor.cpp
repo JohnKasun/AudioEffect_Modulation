@@ -49,6 +49,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mMixSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     mMixSlider.setLookAndFeel(&mMyLookAndFeel);
     mMixSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    addAndMakeVisible(mMixLabel);
+    mMixLabel.attachToComponent(&mMixSlider, true);
+    mMixLabel.setText("Mix", juce::dontSendNotification);
 
     setSize(paramControlWidth * 2, (paramControlHeight + paramLinearSliderHeight) * 2);
 }
@@ -79,5 +82,7 @@ void AudioPluginAudioProcessorEditor::resized()
 
     mGainLabel.setBounds(gainArea.removeFromLeft(paramLinearSliderLabelWidth));
     mGainSlider.setBounds(gainArea);
+
+    mMixLabel.setBounds(mixArea.removeFromLeft(paramLinearSliderLabelWidth));
     mMixSlider.setBounds(mixArea);
 }
