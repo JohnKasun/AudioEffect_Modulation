@@ -48,6 +48,7 @@ private:
     juce::ComboBox mWaveformSelector;
     std::unique_ptr<ComboBoxAttachment> mWaveformSelectorAttachment;    
     
+    juce::Label mGainLabel;
     juce::Slider mGainSlider;
     std::unique_ptr<SliderAttachment> mGainSliderAttachment;
 
