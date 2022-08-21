@@ -29,7 +29,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mVoicesSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
 
     addAndMakeVisible(mWaveformSelector);
-    mWaveformSelector.addItemList({"Sine", "Triangle"}, 0);
+    mWaveformSelector.addItemList({"Sine", "Triangle"}, 1);
     mWaveformSelectorAttachment.reset(new ComboBoxAttachment(mValueTreeState, "waveform", mWaveformSelector));
     mWaveformSelector.setLookAndFeel(&mMyLookAndFeel);
     mWaveformSelector.setSelectedItemIndex(1, juce::sendNotification);
