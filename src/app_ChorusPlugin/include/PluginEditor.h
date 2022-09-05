@@ -41,12 +41,6 @@ private:
 
     juce::Slider mSpeedSlider;
     std::unique_ptr<SliderAttachment> mSpeedSliderAttachment;
-
-    juce::Slider mVoicesSlider;
-    std::unique_ptr<SliderAttachment> mVoicesSliderAttachment;
-
-    juce::ComboBox mWaveformSelector;
-    std::unique_ptr<ComboBoxAttachment> mWaveformSelectorAttachment;    
     
     juce::Label mGainLabel;
     juce::Slider mGainSlider;

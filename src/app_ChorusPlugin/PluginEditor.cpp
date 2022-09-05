@@ -21,18 +21,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mSpeedSlider.setLookAndFeel(&mMyLookAndFeel);
     mSpeedSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
 
-    addAndMakeVisible(mVoicesSlider);
-    mVoicesSliderAttachment.reset(new SliderAttachment(mValueTreeState, "voices", mVoicesSlider));
-    mVoicesSlider.setName("Voices");
-    mVoicesSlider.setSliderStyle(juce::Slider::Rotary);
-    mVoicesSlider.setLookAndFeel(&mMyLookAndFeel);
-    mVoicesSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-
-    addAndMakeVisible(mWaveformSelector);
-    mWaveformSelector.addItemList({"Sine", "Triangle"}, 1);
-    mWaveformSelectorAttachment.reset(new ComboBoxAttachment(mValueTreeState, "waveform", mWaveformSelector));
-    mWaveformSelector.setLookAndFeel(&mMyLookAndFeel);
-
     addAndMakeVisible(mGainSlider);
     mGainSliderAttachment.reset(new SliderAttachment(mValueTreeState, "gain", mGainSlider));
     mGainSlider.setName("Gain");
@@ -53,7 +41,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     mMixLabel.attachToComponent(&mMixSlider, true);
     mMixLabel.setText("Mix", juce::dontSendNotification);
 
-    setSize(paramControlWidth * 2, (paramControlHeight + paramLinearSliderHeight) * 2);
+    setSize(paramControlWidth * 2, paramControlHeight + paramLinearSliderHeight * 2);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -77,8 +65,6 @@ void AudioPluginAudioProcessorEditor::resized()
 
     mDepthSlider.setBounds(topLeftArea);
     mSpeedSlider.setBounds(topRightArea);
-    mVoicesSlider.setBounds(leftArea);
-    mWaveformSelector.setBounds(area);
 
     mGainLabel.setBounds(gainArea.removeFromLeft(paramLinearSliderLabelWidth));
     mGainSlider.setBounds(gainArea);

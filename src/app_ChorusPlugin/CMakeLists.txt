@@ -5,7 +5,8 @@ juce_add_plugin(${APP}
     PLUGIN_MANUFACTURER_CODE John
     PLUGIN_CODE Chrs
     FORMATS AU AUv3 VST3 Standalone
-    PRODUCT_NAME "ChorusPlugin")
+    PRODUCT_NAME "Chorus"
+    COMPANY_NAME NoiseMachine)
 
 target_sources(${APP}
     PRIVATE

@@ -53,8 +53,6 @@ private:
 
     std::atomic<float>* mDepthParam = nullptr;
     std::atomic<float>* mSpeedParam = nullptr;    
-    std::atomic<float>* mVoicesParam = nullptr;
-    std::atomic<float>* mWaveformParam = nullptr;
     std::atomic<float>* mGainParam = nullptr;
     std::atomic<float>* mMixParam = nullptr;
 
