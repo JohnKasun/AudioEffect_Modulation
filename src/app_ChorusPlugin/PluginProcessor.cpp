@@ -95,12 +95,11 @@ void AudioPluginAudioProcessor::releaseResources()
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo() &&
+      layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono())
+    return false;
 
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
+  if (layouts.getMainInputChannels() > layouts.getMainOutputChannels()) return false;
 
     return true;
 }
